@@ -1,20 +1,118 @@
 <script setup>
-const event = {
-  title: 'Shaqyru.kz',
+import axios from 'axios'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
+
+const props = defineProps({
+  slug: {
+    type: String,
+    default: 'ayan-aruzhan',
+  },
+})
+
+const loading = ref(false)
+const error = ref('')
+
+const event = reactive({
+  title: '',
   subtitle: 'Онлайн шақыру',
-  coupleNames: 'Аян & Аружан',
-  date: '24 Тамыз 2026',
-  time: '19:00',
-  location: 'Almaty, Dostyk Plaza Event Hall',
-  description:
-    'Сізді біздің ең қуанышты күнімізге ортақтасуға шақырамыз. Төменде өзіңізге қолайлы статусты таңдап, қатысуыңызды растаңыз.',
+  coupleNames: '',
+  date: '',
+  time: '',
+  location: '',
+  description: '',
+})
+
+const stats = ref([
+  { label: 'Қонақтар', value: '0' },
+  { label: 'Үстелдер', value: '—' },
+  { label: 'Қатысушылар', value: '—' },
+])
+
+const guestForm = reactive({
+  name: '',
+  phone: '',
+  status: 'yes',
+  table_number: '',
+  notes: '',
+})
+
+const submitting = ref(false)
+const submitMessage = ref('')
+
+const apiBase = computed(() => {
+  // Django по умолчанию крутится на 8000
+  return `${window.location.origin}/api/invitations`
+})
+
+async function loadInvitation() {
+  loading.value = true
+  error.value = ''
+  submitMessage.value = ''
+  try {
+    const { data } = await axios.get(`${apiBase.value}/${props.slug}/`)
+    event.coupleNames = data.couple_names
+    event.date = data.date
+    event.time = data.time
+    event.location = data.location
+    event.description =
+      data.description ||
+      'Сізді біздің ең қуанышты күнімізге ортақтасуға шақырамыз. Төменде өзіңізге қолайлы статусты таңдап, қатысуыңызды растаңыз.'
+    event.title = data.title || 'Shaqyru.kz'
+
+    const guests = data.guests || []
+    const total = guests.length
+    const yesCount = guests.filter(g => g.status === 'yes').length
+    stats.value = [
+      { label: 'Қонақтар', value: total ? `${total}` : '0' },
+      { label: 'Үстелдер', value: '—' },
+      { label: 'Қатысушылар', value: total ? `${Math.round((yesCount / total) * 100)}%` : '—' },
+    ]
+  } catch (e) {
+    error.value = 'Шақыру табылмады немесе сервер қателігі.'
+    console.error(e)
+  } finally {
+    loading.value = false
+  }
 }
 
-const stats = [
-  { label: 'Қонақтар', value: '120+' },
-  { label: 'Үстелдер', value: '12' },
-  { label: 'Қатысушылар', value: '85%' },
-]
+async function submitGuest(statusOverride) {
+  if (!guestForm.name.trim()) {
+    submitMessage.value = 'Аты-жөні міндетті.'
+    return
+  }
+  submitting.value = true
+  submitMessage.value = ''
+  try {
+    const payload = {
+      name: guestForm.name,
+      phone: guestForm.phone,
+      status: statusOverride || guestForm.status,
+      table_number: guestForm.table_number || null,
+      notes: guestForm.notes,
+    }
+    await axios.post(`${apiBase.value}/${props.slug}/guests/`, payload)
+    submitMessage.value = 'Рахмет! Жауабыңыз сақталды.'
+    guestForm.name = ''
+    guestForm.phone = ''
+    guestForm.table_number = ''
+    guestForm.notes = ''
+    await loadInvitation()
+  } catch (e) {
+    submitMessage.value = 'Қате кетті. Кейінірек қайталап көріңіз.'
+    console.error(e)
+  } finally {
+    submitting.value = false
+  }
+}
+
+onMounted(loadInvitation)
+
+watch(
+  () => props.slug,
+  () => {
+    loadInvitation()
+  }
+)
 </script>
 
 <template>
@@ -31,7 +129,7 @@ const stats = [
           </p>
         </header>
 
-        <div class="hero-body">
+        <div v-if="!error" class="hero-body">
           <div class="hero-info">
             <div class="info-row">
               <span class="info-label">Күні</span>
@@ -52,12 +150,30 @@ const stats = [
           </p>
 
           <div class="hero-actions">
-            <button type="button" class="btn btn-primary">Қатысамын</button>
-            <button type="button" class="btn btn-secondary">Қатыса алмаймын</button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              :disabled="submitting"
+              @click="submitGuest('yes')"
+            >
+              Қатысамын
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              :disabled="submitting"
+              @click="submitGuest('no')"
+            >
+              Қатыса алмаймын
+            </button>
           </div>
         </div>
 
-        <footer class="hero-footer">
+        <p v-if="error" class="error-text">
+          {{ error }}
+        </p>
+
+        <footer v-else class="hero-footer">
           <div
             v-for="item in stats"
             :key="item.label"
@@ -93,22 +209,29 @@ const stats = [
 
             <label class="field">
               <span class="field-label">Статус</span>
-              <select class="field-input">
-                <option>Қатысады</option>
-                <option>Қатыса алмайды</option>
-                <option>Әлі ойлануда</option>
+              <select v-model="guestForm.status" class="field-input">
+                <option value="yes">Қатысады</option>
+                <option value="no">Қатыса алмайды</option>
+                <option value="maybe">Әлі ойлануда</option>
               </select>
             </label>
 
             <label class="field">
               <span class="field-label">Үстел</span>
-              <input class="field-input" type="number" min="1" placeholder="№" />
+              <input
+                v-model="guestForm.table_number"
+                class="field-input"
+                type="number"
+                min="1"
+                placeholder="№"
+              />
             </label>
           </div>
 
           <label class="field field-full">
             <span class="field-label">Қосымша ақпарат</span>
             <textarea
+              v-model="guestForm.notes"
               class="field-input field-textarea"
               rows="3"
               placeholder="Мысалы: вегетариандық мәзір, балалар саны және т.б."
@@ -116,9 +239,19 @@ const stats = [
           </label>
 
           <div class="form-footer">
-            <button type="button" class="btn btn-primary">Қонақты қосу (болашақта API)</button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              :disabled="submitting"
+              @click="submitGuest()"
+            >
+              Қонақты қосу
+            </button>
             <p class="form-hint">
-              Деректер кейін Django API арқылы сақталады, ал шақыру бетінде Vue оларды көрсетеді.
+              Деректер Django API арқылы сақталады, ал шақыру бетінде Vue оларды көрсетеді.
+            </p>
+            <p v-if="submitMessage" class="form-message">
+              {{ submitMessage }}
             </p>
           </div>
         </form>
@@ -255,6 +388,12 @@ const stats = [
   font-size: 14px;
   color: #4b5563;
   line-height: 1.6;
+}
+
+.error-text {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #b91c1c;
 }
 
 .hero-actions {
@@ -443,6 +582,11 @@ const stats = [
 .form-hint {
   font-size: 12px;
   color: #9ca3af;
+}
+
+.form-message {
+  font-size: 12px;
+  color: #a5b4fc;
 }
 
 @media (max-width: 480px) {

@@ -198,6 +198,7 @@ const siteLinks = [
   { to: '/', label: 'Басты бет' },
   { to: '/templates', label: 'Үлгілер' },
   { to: '/songs', label: 'Той әндері' },
+  { to: '/blog', label: 'Блог' },
   { to: '/builder', label: 'Той шақыру жасау' },
 ]
 </script>

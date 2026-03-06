@@ -24,6 +24,7 @@
           <NuxtLink to="/" class="nav-link" active-class="nav-link-active" exact>Басты бет</NuxtLink>
           <NuxtLink to="/templates" class="nav-link" active-class="nav-link-active">Үлгілер</NuxtLink>
           <NuxtLink to="/songs" class="nav-link" active-class="nav-link-active">Той әндері</NuxtLink>
+          <NuxtLink to="/blog" class="nav-link" active-class="nav-link-active">Блог</NuxtLink>
         </div>
 
         <!-- Right side -->
@@ -93,6 +94,11 @@
           class="block px-3 py-2.5 rounded-lg text-gray-700 hover:bg-cream-100 hover:text-brand-green font-medium transition-colors"
           @click="menuOpen = false"
         >Той әндері</NuxtLink>
+        <NuxtLink
+          to="/blog"
+          class="block px-3 py-2.5 rounded-lg text-gray-700 hover:bg-cream-100 hover:text-brand-green font-medium transition-colors"
+          @click="menuOpen = false"
+        >Блог</NuxtLink>
         <div class="pt-2 border-t border-gray-100 space-y-2">
           <NuxtLink to="/builder" class="btn-primary w-full justify-center" @click="menuOpen = false">
             Шақыру жасау

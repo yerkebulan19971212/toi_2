@@ -33,7 +33,7 @@ WORKDIR /app
 
 RUN npm install -g serve
 
-COPY --from=builder /app/.output/public ./public
+COPY --from=builder /app/dist ./public
 
 EXPOSE 3030
 

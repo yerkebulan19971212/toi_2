@@ -1,6 +1,15 @@
 from django.contrib import admin
 
-from .models import Guest, Invitation, InvitationTemplate
+from .models import Guest, Invitation, InvitationCategory, InvitationTemplate
+
+
+@admin.register(InvitationCategory)
+class InvitationCategoryAdmin(admin.ModelAdmin):
+    list_display = ('code', 'name_kz', 'name_ru', 'icon', 'order', 'is_active')
+    list_filter = ('is_active',)
+    search_fields = ('code', 'name_kz', 'name_ru', 'name_en')
+    list_editable = ('order', 'is_active')
+    ordering = ('order',)
 
 
 @admin.register(InvitationTemplate)

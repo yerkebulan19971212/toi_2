@@ -1,8 +1,18 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import generics
 
-from .models import Guest, Invitation, InvitationTemplate
-from .serializers import GuestSerializer, InvitationSerializer, InvitationTemplateSerializer
+from .models import Guest, Invitation, InvitationCategory, InvitationTemplate
+from .serializers import (
+    GuestSerializer,
+    InvitationCategorySerializer,
+    InvitationSerializer,
+    InvitationTemplateSerializer,
+)
+
+
+class CategoryListView(generics.ListAPIView):
+    queryset = InvitationCategory.objects.filter(is_active=True)
+    serializer_class = InvitationCategorySerializer
 
 
 class TemplateListView(generics.ListAPIView):
@@ -13,7 +23,10 @@ class TemplateListView(generics.ListAPIView):
         qs = super().get_queryset()
         category = self.request.query_params.get('category')
         if category:
-            qs = qs.filter(category=category)
+            if category.isdigit():
+                qs = qs.filter(category_id=int(category))
+            else:
+                qs = qs.filter(category__code=category)
         return qs
 
 

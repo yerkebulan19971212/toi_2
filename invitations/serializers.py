@@ -1,13 +1,21 @@
 from rest_framework import serializers
 
-from .models import Guest, Invitation, InvitationTemplate
+from .models import Guest, Invitation, InvitationCategory, InvitationTemplate
+
+
+class InvitationCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = InvitationCategory
+        fields = ['id', 'code', 'name_kz', 'name_ru', 'name_en', 'icon', 'order', 'is_active']
 
 
 class InvitationTemplateSerializer(serializers.ModelSerializer):
+    category_detail = InvitationCategorySerializer(source='category', read_only=True)
+
     class Meta:
         model = InvitationTemplate
         fields = [
-            'id', 'name', 'category', 'preview_image',
+            'id', 'name', 'category', 'category_detail', 'preview_image',
             'gradient_from', 'gradient_to', 'price', 'is_free',
             'is_featured', 'is_active', 'created_at',
         ]

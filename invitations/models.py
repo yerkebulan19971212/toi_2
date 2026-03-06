@@ -3,21 +3,34 @@ import uuid
 from django.db import models
 from django.utils.text import slugify
 
+from base.abstract_models import NameModel
+
+
+class InvitationCategory(NameModel):
+    """Category for invitation templates (ұзату той, қыз ұзату, etc.)."""
+    code = models.SlugField(max_length=32, unique=True)
+    icon = models.CharField(max_length=128, blank=True, help_text='Icon class or emoji')
+    is_active = models.BooleanField(default=True)
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['order', 'name_kz']
+        verbose_name = 'Invitation category'
+        verbose_name_plural = 'Invitation categories'
+
+    def __str__(self):
+        return self.name_kz or self.code
+
 
 class InvitationTemplate(models.Model):
-    CATEGORY_CHOICES = [
-        ('uzatu', 'Ұзату той'),
-        ('qyz_uzatu', 'Қыз ұзату'),
-        ('sunnet', 'Сүндет той'),
-        ('tusaukesar', 'Тұсаукесер'),
-        ('merey', 'Мерей той'),
-        ('besik', 'Бесік той'),
-        ('betashar', 'Беташар'),
-        ('other', 'Асау тойлар'),
-    ]
-
     name = models.CharField(max_length=255)
-    category = models.CharField(max_length=32, choices=CATEGORY_CHOICES, default='uzatu')
+    category = models.ForeignKey(
+        'invitations.InvitationCategory',
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name='templates',
+    )
     preview_image = models.ImageField(upload_to='templates/', blank=True, null=True)
     gradient_from = models.CharField(max_length=20, default='#667eea')
     gradient_to = models.CharField(max_length=20, default='#764ba2')

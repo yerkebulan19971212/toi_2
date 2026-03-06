@@ -6,7 +6,10 @@ from .models import Guest, Invitation, InvitationCategory, InvitationTemplate
 class InvitationCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = InvitationCategory
-        fields = ['id', 'code', 'name_kz', 'name_ru', 'name_en', 'icon', 'order', 'is_active']
+        fields = [
+            'id', 'code', 'name_kz', 'name_ru', 'name_en',
+            'icon', 'subtitle', 'bg_class', 'order', 'is_active',
+        ]
 
 
 class InvitationTemplateSerializer(serializers.ModelSerializer):

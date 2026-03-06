@@ -5,9 +5,9 @@ from .models import Guest, Invitation, InvitationCategory, InvitationTemplate
 
 @admin.register(InvitationCategory)
 class InvitationCategoryAdmin(admin.ModelAdmin):
-    list_display = ('code', 'name_kz', 'name_ru', 'icon', 'order', 'is_active')
+    list_display = ('code', 'name_kz', 'name_ru', 'subtitle', 'icon', 'order', 'is_active')
     list_filter = ('is_active',)
-    search_fields = ('code', 'name_kz', 'name_ru', 'name_en')
+    search_fields = ('code', 'name_kz', 'name_ru', 'name_en', 'subtitle')
     list_editable = ('order', 'is_active')
     ordering = ('order',)
 

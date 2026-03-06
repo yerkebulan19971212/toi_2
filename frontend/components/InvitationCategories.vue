@@ -9,7 +9,23 @@
         </p>
       </div>
 
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div v-if="loading" class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div
+          v-for="i in 4"
+          :key="i"
+          class="card p-5 flex flex-col items-center animate-pulse"
+        >
+          <div class="w-14 h-14 rounded-2xl bg-gray-200 mb-3" />
+          <div class="h-4 bg-gray-200 rounded w-20 mb-2" />
+          <div class="h-3 bg-gray-100 rounded w-14" />
+        </div>
+      </div>
+
+      <div v-else-if="error" class="text-center py-8 text-gray-500 text-sm">
+        {{ error }}
+      </div>
+
+      <div v-else class="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <NuxtLink
           v-for="cat in categories"
           :key="cat.slug"
@@ -25,7 +41,7 @@
           <span
             class="text-sm font-sans font-medium text-gray-800 group-hover:text-brand-green transition-colors leading-snug"
           >{{ cat.name }}</span>
-          <span class="text-xs text-gray-400 mt-1">{{ cat.sub }}</span>
+          <span v-if="cat.sub" class="text-xs text-gray-400 mt-1">{{ cat.sub }}</span>
         </NuxtLink>
       </div>
     </div>
@@ -33,62 +49,33 @@
 </template>
 
 <script setup>
-const categories = [
-  {
-    slug: 'uzatu',
-    name: 'Ұзату той',
-    sub: 'Үйлену',
-    icon: '💍',
-    bgClass: 'bg-amber-50 group-hover:bg-amber-100',
-  },
-  {
-    slug: 'qyz_uzatu',
-    name: 'Қыз ұзату',
-    sub: 'Қыз шығару',
-    icon: '👰',
-    bgClass: 'bg-pink-50 group-hover:bg-pink-100',
-  },
-  {
-    slug: 'sunnet',
-    name: 'Сүндет той',
-    sub: 'Сүндет',
-    icon: '🌙',
-    bgClass: 'bg-blue-50 group-hover:bg-blue-100',
-  },
-  {
-    slug: 'tusaukesar',
-    name: 'Тұсаукесер',
-    sub: 'Алғашқы қадам',
-    icon: '👶',
-    bgClass: 'bg-green-50 group-hover:bg-green-100',
-  },
-  {
-    slug: 'merey',
-    name: 'Мерей той',
-    sub: 'Мерейтой',
-    icon: '🎊',
-    bgClass: 'bg-purple-50 group-hover:bg-purple-100',
-  },
-  {
-    slug: 'besik',
-    name: 'Бесік той',
-    sub: 'Нәресте',
-    icon: '🛏️',
-    bgClass: 'bg-yellow-50 group-hover:bg-yellow-100',
-  },
-  {
-    slug: 'betashar',
-    name: 'Беташар',
-    sub: 'Дәстүр',
-    icon: '💃',
-    bgClass: 'bg-rose-50 group-hover:bg-rose-100',
-  },
-  {
-    slug: 'other',
-    name: 'Асау тойлар',
-    sub: 'Басқалары',
-    icon: '🎉',
-    bgClass: 'bg-orange-50 group-hover:bg-orange-100',
-  },
-]
+const categories = ref([])
+const loading = ref(true)
+const error = ref('')
+
+async function loadCategories() {
+  loading.value = true
+  error.value = ''
+  try {
+    const { get } = useApi()
+    const data = await get('/api/invitations/categories/')
+    const raw = Array.isArray(data) ? data : (data.results ?? [])
+
+    categories.value = raw.map((cat) => ({
+      slug: cat.code,
+      name: cat.name_kz || cat.name_ru || cat.name_en || cat.code,
+      sub: cat.subtitle || '',
+      icon: cat.icon || '🎉',
+      bgClass: cat.bg_class || 'bg-emerald-50 group-hover:bg-emerald-100',
+    }))
+  } catch (e) {
+    console.error('Failed to load invitation categories', e)
+    error.value = 'Санаттарды жүктеу мүмкін болмады. Кейінірек қайталап көріңіз.'
+    categories.value = []
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(loadCategories)
 </script>

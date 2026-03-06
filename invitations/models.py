@@ -10,6 +10,14 @@ class InvitationCategory(NameModel):
     """Category for invitation templates (ұзату той, қыз ұзату, etc.)."""
     code = models.SlugField(max_length=32, unique=True)
     icon = models.CharField(max_length=128, blank=True, help_text='Icon class or emoji')
+    subtitle = models.CharField(
+        max_length=128, blank=True,
+        help_text='Short subtitle shown under the category name (e.g. Үйлену)'
+    )
+    bg_class = models.CharField(
+        max_length=128, blank=True, default='bg-emerald-50 group-hover:bg-emerald-100',
+        help_text='Tailwind classes for the icon box, e.g. bg-amber-50 group-hover:bg-amber-100'
+    )
     is_active = models.BooleanField(default=True)
     order = models.PositiveIntegerField(default=0)
 

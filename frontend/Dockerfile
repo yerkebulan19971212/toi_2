@@ -21,7 +21,7 @@ RUN npm install
 
 COPY . .
 
-ARG NUXT_PUBLIC_API_BASE=http://localhost:8081
+ARG NUXT_PUBLIC_API_BASE=http://api-toi.daraedu.kz
 ENV NUXT_PUBLIC_API_BASE=$NUXT_PUBLIC_API_BASE
 
 RUN npm run generate

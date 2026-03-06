@@ -116,12 +116,15 @@ MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # CORS
-CORS_ALLOWED_ORIGINS = config(
-    'CORS_ALLOWED_ORIGINS',
-    default='http://localhost:3000,http://127.0.0.1:3000,http://api-toi.daraedu.kz,http://toi.daraedu.kz',
-    cast=lambda v: [s.strip() for s in v.split(',')]
-)
+CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
+
+# CORS_ALLOWED_ORIGINS = config(
+#     'CORS_ALLOWED_ORIGINS',
+#     default='http://localhost:3000,http://127.0.0.1:3000,http://api-toi.daraedu.kz,http://toi.daraedu.kz',
+#     cast=lambda v: [s.strip() for s in v.split(',')]
+# )
+# CORS_ALLOW_CREDENTIALS = True
 
 # REST Framework
 REST_FRAMEWORK = {

@@ -31,19 +31,28 @@
         >
           Барлық әндер
         </button>
-        <button
-          v-for="cat in songsStore.categories"
-          :key="cat.slug"
-          class="px-4 py-2 rounded-full text-sm font-sans font-medium transition-all"
-          :class="
-            activeCategory === cat.slug
-              ? 'bg-gray-900 text-white shadow-sm'
-              : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
-          "
-          @click="setCategory(cat.slug)"
-        >
-          {{ cat.name }}
-        </button>
+        <template v-if="songsStore.categoriesLoading">
+          <div
+            v-for="i in 5"
+            :key="i"
+            class="h-9 w-24 bg-gray-200 rounded-full animate-pulse"
+          />
+        </template>
+        <template v-else>
+          <button
+            v-for="cat in songsStore.categories"
+            :key="cat.slug"
+            class="px-4 py-2 rounded-full text-sm font-sans font-medium transition-all"
+            :class="
+              activeCategory === cat.slug
+                ? 'bg-gray-900 text-white shadow-sm'
+                : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+            "
+            @click="setCategory(cat.slug)"
+          >
+            {{ cat.name }}
+          </button>
+        </template>
       </div>
 
       <!-- Song list -->
@@ -73,6 +82,12 @@
             <div class="w-10 h-3 bg-gray-100 rounded" />
           </div>
         </div>
+
+        <template v-else-if="songsStore.error">
+          <div class="text-center py-12 text-gray-500">
+            <p class="text-sm">{{ songsStore.error }}</p>
+          </div>
+        </template>
 
         <SongList v-else :songs="displaySongs" />
       </div>
@@ -105,36 +120,37 @@ import { usePlayerStore } from '~/stores/player'
 
 useHead({ title: 'Той әндері — Shaqyru.kz' })
 
+const route = useRoute()
+const router = useRouter()
 const songsStore = useSongsStore()
 const playerStore = usePlayerStore()
 
-const activeCategory = ref(null)
+// Category from URL (slug), e.g. ?category=traditional
+const activeCategory = ref(route.query.category || null)
 
-const fallbackSongs = [
-  { id: 1, title: 'Жар жар', artist: 'Халық әні', duration: 185, duration_display: '3:05', category_detail: { name: 'Дәстүрлі той' } },
-  { id: 2, title: 'Беташар', artist: 'Халық әні', duration: 210, duration_display: '3:30', category_detail: { name: 'Беташар' } },
-  { id: 3, title: 'Құдаша', artist: 'Халық әні', duration: 195, duration_display: '3:15', category_detail: { name: 'Дәстүрлі той' } },
-  { id: 4, title: 'Шашу', artist: 'Халық әні', duration: 160, duration_display: '2:40', category_detail: { name: 'Дәстүрлі той' } },
-  { id: 5, title: 'Той бастар', artist: 'Халық әні', duration: 240, duration_display: '4:00', category_detail: { name: 'Дәстүрлі той' } },
-  { id: 6, title: 'Келін түсіру', artist: 'Халық әні', duration: 220, duration_display: '3:40', category_detail: { name: 'Дәстүрлі той' } },
-  { id: 7, title: 'Думан той', artist: 'Халық әні', duration: 175, duration_display: '2:55', category_detail: { name: 'Заманауи той' } },
-  { id: 8, title: 'Қыз ұзату', artist: 'Халық әні', duration: 230, duration_display: '3:50', category_detail: { name: 'Жар жар' } },
-  { id: 9, title: 'Сыңсу', artist: 'Халық әні', duration: 200, duration_display: '3:20', category_detail: { name: 'Жар жар' } },
-  { id: 10, title: 'Бесік жыры', artist: 'Халық әні', duration: 180, duration_display: '3:00', category_detail: { name: 'Дәстүрлі той' } },
-  { id: 11, title: 'Жеңге той', artist: 'Халық әні', duration: 165, duration_display: '2:45', category_detail: { name: 'Заманауи той' } },
-  { id: 12, title: 'Той думан', artist: 'Халық әні', duration: 190, duration_display: '3:10', category_detail: { name: 'Заманауи той' } },
-]
+// Only data from API; no fallback list
+const displaySongs = computed(() => songsStore.songs)
 
-const displaySongs = computed(() =>
-  songsStore.songs.length > 0 ? songsStore.songs : fallbackSongs
-)
-
-const setCategory = (cat) => {
-  activeCategory.value = cat
-  songsStore.fetchSongs(cat)
+function setCategory(slug) {
+  activeCategory.value = slug
+  router.replace({ query: slug ? { category: slug } : {} })
+  songsStore.fetchSongs(slug)
 }
 
 onMounted(async () => {
-  await Promise.all([songsStore.fetchCategories(), songsStore.fetchSongs()])
+  await songsStore.fetchCategories()
+  // Init from URL if present
+  if (activeCategory.value) {
+    songsStore.fetchSongs(activeCategory.value)
+  } else {
+    await songsStore.fetchSongs()
+  }
+})
+
+watch(() => route.query.category, (newSlug) => {
+  activeCategory.value = newSlug || null
+  if (route.name === 'songs') {
+    songsStore.fetchSongs(activeCategory.value)
+  }
 })
 </script>

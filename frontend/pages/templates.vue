@@ -23,19 +23,28 @@
         >
           Барлығы
         </button>
-        <button
-          v-for="cat in categories"
-          :key="cat.slug"
-          class="px-4 py-2 rounded-full text-sm font-sans font-medium transition-all duration-150"
-          :class="
-            activeCategory === cat.slug
-              ? 'bg-brand-green text-white shadow-sm'
-              : 'bg-white text-gray-600 hover:bg-cream-200 border border-gray-200'
-          "
-          @click="setCategory(cat.slug)"
-        >
-          {{ cat.name }}
-        </button>
+        <template v-if="categoriesLoading">
+          <div
+            v-for="i in 6"
+            :key="i"
+            class="h-9 w-24 bg-gray-200 rounded-full animate-pulse"
+          />
+        </template>
+        <template v-else>
+          <button
+            v-for="cat in categories"
+            :key="cat.slug"
+            class="px-4 py-2 rounded-full text-sm font-sans font-medium transition-all duration-150"
+            :class="
+              activeCategory === cat.slug
+                ? 'bg-brand-green text-white shadow-sm'
+                : 'bg-white text-gray-600 hover:bg-cream-200 border border-gray-200'
+            "
+            @click="setCategory(cat.slug)"
+          >
+            {{ cat.name }}
+          </button>
+        </template>
       </div>
 
       <!-- Loading -->
@@ -80,20 +89,33 @@ import { useTemplatesStore } from '~/stores/templates'
 useHead({ title: 'Үлгілер — Shaqyru.kz' })
 
 const route = useRoute()
+const router = useRouter()
 const store = useTemplatesStore()
 
+// Category from URL (code), e.g. ?category=uzatu
 const activeCategory = ref(route.query.category || null)
 
-const categories = [
-  { slug: 'uzatu', name: 'Ұзату той' },
-  { slug: 'qyz_uzatu', name: 'Қыз ұзату' },
-  { slug: 'sunnet', name: 'Сүндет той' },
-  { slug: 'tusaukesar', name: 'Тұсаукесер' },
-  { slug: 'merey', name: 'Мерей той' },
-  { slug: 'besik', name: 'Бесік той' },
-  { slug: 'betashar', name: 'Беташар' },
-  { slug: 'other', name: 'Басқалары' },
-]
+// Categories loaded from API (dynamic)
+const categories = ref([])
+const categoriesLoading = ref(true)
+
+async function loadCategories() {
+  categoriesLoading.value = true
+  try {
+    const { get } = useApi()
+    const data = await get('/api/invitations/categories/')
+    const raw = Array.isArray(data) ? data : (data.results ?? [])
+    categories.value = raw.map((cat) => ({
+      slug: cat.code,
+      name: cat.name_kz || cat.name_ru || cat.name_en || cat.code,
+    }))
+  } catch (e) {
+    console.error('loadCategories:', e)
+    categories.value = []
+  } finally {
+    categoriesLoading.value = false
+  }
+}
 
 const loading = computed(() => store.loading)
 
@@ -112,18 +134,29 @@ const fallbackTemplates = [
   { id: 12, name: 'Дариға', category: 'merey', gradient_from: '#2C3E6B', gradient_to: '#1A2440', price: 3000, is_free: false, is_featured: false },
 ]
 
+// API returns already filtered list by category (code); fallback filters client-side
 const displayTemplates = computed(() => {
-  const base = store.templates.length > 0 ? store.templates : fallbackTemplates
-  if (!activeCategory.value) return base
-  return base.filter((t) => t.category === activeCategory.value)
+  if (store.templates.length > 0) return store.templates
+  if (!activeCategory.value) return fallbackTemplates
+  return fallbackTemplates.filter((t) => t.category === activeCategory.value)
 })
 
-const setCategory = (cat) => {
-  activeCategory.value = cat
-  store.fetchTemplates(cat)
+function setCategory(code) {
+  activeCategory.value = code
+  router.replace({ query: code ? { category: code } : {} })
+  store.fetchTemplates(code)
 }
 
+// Init from URL and load categories
 onMounted(() => {
+  loadCategories()
   store.fetchTemplates(activeCategory.value)
+})
+
+watch(() => route.query.category, (newCode) => {
+  activeCategory.value = newCode || null
+  if (route.name === 'templates') {
+    store.fetchTemplates(activeCategory.value)
+  }
 })
 </script>

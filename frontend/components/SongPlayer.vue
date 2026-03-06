@@ -31,7 +31,7 @@
           {{ currentSong?.title || 'Ән таңдаңыз' }}
         </h3>
         <p class="text-gray-400 text-sm truncate">
-          {{ currentSong?.artist || 'Той музыкасы' }}
+          {{ currentSong?.artist || '—' }}
         </p>
       </div>
 

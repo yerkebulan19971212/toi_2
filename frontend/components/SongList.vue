@@ -54,12 +54,12 @@
           class="text-sm font-sans font-medium truncate"
           :class="isCurrentSong(song) ? 'text-brand-green' : 'text-gray-900'"
         >{{ song.title }}</p>
-        <p class="text-xs text-gray-400 truncate">{{ song.artist || 'Халық әні' }}</p>
+        <p class="text-xs text-gray-400 truncate">{{ song.artist || '—' }}</p>
       </div>
 
       <!-- Category -->
       <span
-        v-if="song.category_detail"
+        v-if="song.category_detail?.name"
         class="hidden sm:block text-xs text-gray-400 font-sans bg-gray-100 px-2 py-0.5 rounded-full"
       >{{ song.category_detail.name }}</span>
 

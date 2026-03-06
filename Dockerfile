@@ -12,4 +12,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . /app/
 
-CMD ["gunicorn", "--bind", ":8081", "--workers", "9", "NewToi.wsgi:application"]
+CMD ["gunicorn", "--bind", ":8097", "--workers", "9", "NewToi.wsgi:application"]

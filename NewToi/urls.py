@@ -1,27 +1,14 @@
-"""
-URL configuration for NewToi project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/6.0/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
-
 from django.contrib import admin
 from django.urls import include, path
+from django.conf import settings
+from django.conf.urls.static import static
 from django.views.generic import TemplateView
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
-    path("api/invitations/", include("invitations.urls", namespace="invitations")),
-    path("", TemplateView.as_view(template_name="index.html"), name="spa"),
-    path("<path:slug>/", TemplateView.as_view(template_name="index.html"), name="spa-catchall"),
-]
+    path('admin/', admin.site.urls),
+    path('api/invitations/', include('invitations.urls', namespace='invitations')),
+    path('api/songs/', include('songs.urls', namespace='songs')),
+    path('api/blog/', include('blog.urls', namespace='blog')),
+    path('', TemplateView.as_view(template_name='index.html'), name='spa'),
+    path('<path:slug>/', TemplateView.as_view(template_name='index.html'), name='spa-catchall'),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -12,7 +12,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      apiBase: 'https://api-toi.daraedu.kz',
+      apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:8000',
     },
   },
 

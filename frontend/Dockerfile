@@ -27,6 +27,14 @@ ENV NUXT_PUBLIC_API_BASE=$NUXT_PUBLIC_API_BASE
 RUN npm run generate
 
 # ---- Production static serving ----
+FROM node:20-alpine
 
+WORKDIR /app
 
-EXPOSE 80
+RUN npm install -g serve
+
+COPY --from=builder /app/.output/public ./public
+
+EXPOSE 3030
+
+CMD ["serve", "-s", "public", "-l", "3030"]

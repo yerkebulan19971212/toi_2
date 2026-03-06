@@ -28,17 +28,6 @@ services:
       DB_PORT: "5432"
       CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:3030}
 
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-      target: prod
-      args:
-        NUXT_PUBLIC_API_BASE: ${API_BASE:-http://localhost:8081}
-    restart: always
-    ports:
-      - "3030:80"
-
 volumes:
   media_data:
   static_data:

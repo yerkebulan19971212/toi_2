@@ -27,9 +27,6 @@ ENV NUXT_PUBLIC_API_BASE=$NUXT_PUBLIC_API_BASE
 RUN npm run generate
 
 # ---- Production static serving ----
-FROM nginx:alpine AS prod
 
-COPY --from=builder /app/dist /usr/share/nginx/html
-COPY nginx.prod.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80

@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        NUXT_PUBLIC_API_BASE: ${NUXT_PUBLIC_API_BASE:-http://api-toi.daraedu.kz}
+        NUXT_PUBLIC_API_BASE: ${NUXT_PUBLIC_API_BASE:-https://api-toi.daraedu.kz}
     restart: always
     ports:
       - "3030:3030"

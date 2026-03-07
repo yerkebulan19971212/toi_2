@@ -33,6 +33,8 @@ FROM node:20-alpine AS production
 WORKDIR /app
 
 ENV NODE_ENV=production
+ENV HOST=0.0.0.0
+ENV NITRO_HOST=0.0.0.0
 ENV PORT=3030
 ENV NUXT_PUBLIC_API_BASE=https://api-toi.daraedu.kz
 

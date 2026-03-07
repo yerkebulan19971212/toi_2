@@ -10,4 +10,7 @@ services:
     ports:
       - "3030:3030"
     environment:
+      HOST: "0.0.0.0"
+      NITRO_HOST: "0.0.0.0"
+      PORT: "3030"
       NUXT_PUBLIC_API_BASE: ${NUXT_PUBLIC_API_BASE:-https://api-toi.daraedu.kz}

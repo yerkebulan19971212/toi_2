@@ -44,14 +44,16 @@
 </template>
 
 <script setup>
-import { useTemplatesStore } from '~/stores/templates'
+const { get } = useApi()
 
-const store = useTemplatesStore()
-const loading = computed(() => store.loading)
+const { data: featuredList, pending: loading } = await useAsyncData(
+  'popular-invitations-featured',
+  () =>
+    get('/api/invitations/templates/', { is_featured: true })
+      .then((data) => (data.results ?? data).filter((t) => t.is_featured))
+      .catch(() => [])
+)
 
-onMounted(() => store.fetchFeatured())
-
-// Show API data or static fallbacks while loading
 const fallbackTemplates = [
   {
     id: 1,
@@ -86,6 +88,6 @@ const fallbackTemplates = [
 ]
 
 const displayTemplates = computed(() =>
-  store.featured.length > 0 ? store.featured : fallbackTemplates
+  (featuredList.value?.length ? featuredList.value : fallbackTemplates)
 )
 </script>

@@ -124,21 +124,13 @@
 const route = useRoute()
 const { get, post } = useApi()
 
-const invitation = ref(null)
-const pending = ref(true)
-const rsvpSent = ref(false)
+const { data: invitation, pending } = await useAsyncData(
+  `invite-${route.params.slug}`,
+  () => get(`/api/invitations/${route.params.slug}/`).catch(() => null),
+  { watch: [() => route.params.slug] }
+)
 
-// Fetch invitation
-onMounted(async () => {
-  try {
-    const data = await get(`/api/invitations/${route.params.slug}/`)
-    invitation.value = data
-  } catch {
-    invitation.value = null
-  } finally {
-    pending.value = false
-  }
-})
+const rsvpSent = ref(false)
 
 const bgStyle = computed(() => {
   const tpl = invitation.value?.template_detail

@@ -1,5 +1,20 @@
-# Vue 3 + Vite
+# Shaqyru Frontend (Nuxt 3, SSR)
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+Сайт збирається з **Nuxt 3** у режимі **SSR** (server-side rendering), щоб пошукові системи (Google тощо) бачили повний HTML.
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+## Розробка
+
+```bash
+npm install
+npm run dev
+```
+
+## Production (SSR)
+
+Після `npm run build` запускайте Node-сервер:
+
+```bash
+node .output/server/index.mjs
+```
+
+На сервері має бути встановлена змінна **NUXT_PUBLIC_API_BASE** (URL бекенду), щоб SSR міг підвантажувати дані з API при рендері сторінок.

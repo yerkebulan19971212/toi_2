@@ -66,9 +66,18 @@ const route = useRoute()
 const slug = computed(() => route.params.slug)
 
 const { get } = useApi()
-const post = ref(null)
-const loading = ref(true)
-const error = ref('')
+
+const { data: post, error: fetchError, pending: loading } = await useAsyncData(
+  `blog-${route.params.slug}`,
+  () => get(`/api/blog/${slug.value}/`).catch(() => null),
+  { watch: [slug] }
+)
+
+const error = computed(() => {
+  if (fetchError.value) return 'Жаңалық табылмады.'
+  if (!loading.value && !post.value) return 'Жаңалық табылмады.'
+  return ''
+})
 
 const contentHtml = computed(() => {
   const text = post.value?.content ?? ''
@@ -96,37 +105,6 @@ useHead(() => ({
     ? [{ name: 'description', content: post.value.excerpt }]
     : [],
 }))
-
-onMounted(async () => {
-  if (!slug.value) return
-  loading.value = true
-  error.value = ''
-  try {
-    const data = await get(`/api/blog/${slug.value}/`)
-    post.value = data
-  } catch (e) {
-    console.error('fetch blog post:', e)
-    error.value = 'Жаңалық табылмады.'
-    post.value = null
-  } finally {
-    loading.value = false
-  }
-})
-
-watch(slug, async () => {
-  if (!slug.value) return
-  loading.value = true
-  error.value = ''
-  try {
-    const data = await get(`/api/blog/${slug.value}/`)
-    post.value = data
-  } catch (e) {
-    error.value = 'Жаңалық табылмады.'
-    post.value = null
-  } finally {
-    loading.value = false
-  }
-})
 
 const formatDate = (dateStr) => {
   if (!dateStr) return ''

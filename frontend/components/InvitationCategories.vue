@@ -49,33 +49,27 @@
 </template>
 
 <script setup>
-const categories = ref([])
-const loading = ref(true)
-const error = ref('')
+const { get } = useApi()
 
-async function loadCategories() {
-  loading.value = true
-  error.value = ''
-  try {
-    const { get } = useApi()
-    const data = await get('/api/invitations/categories/')
-    const raw = Array.isArray(data) ? data : (data.results ?? [])
+const { data: rawCategories, pending: loading, error: fetchError } = await useAsyncData(
+  'invitation-categories',
+  () => get('/api/invitations/categories/').catch(() => [])
+)
 
-    categories.value = raw.map((cat) => ({
-      slug: cat.code,
-      name: cat.name_kz || cat.name_ru || cat.name_en || cat.code,
-      sub: cat.subtitle || '',
-      icon: cat.icon || '🎉',
-      bgClass: cat.bg_class || 'bg-emerald-50 group-hover:bg-emerald-100',
-    }))
-  } catch (e) {
-    console.error('Failed to load invitation categories', e)
-    error.value = 'Санаттарды жүктеу мүмкін болмады. Кейінірек қайталап көріңіз.'
-    categories.value = []
-  } finally {
-    loading.value = false
-  }
-}
+const error = computed(() =>
+  fetchError.value ? 'Санаттарды жүктеу мүмкін болмады. Кейінірек қайталап көріңіз.' : ''
+)
 
-onMounted(loadCategories)
+const categories = computed(() => {
+  const data = rawCategories.value
+  if (data == null) return []
+  const raw = Array.isArray(data) ? data : (data?.results ?? [])
+  return raw.map((cat) => ({
+    slug: cat.code,
+    name: cat.name_kz || cat.name_ru || cat.name_en || cat.code,
+    sub: cat.subtitle || '',
+    icon: cat.icon || '🎉',
+    bgClass: cat.bg_class || 'bg-emerald-50 group-hover:bg-emerald-100',
+  }))
+})
 </script>

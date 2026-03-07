@@ -1,3 +1,4 @@
+# ---- Dev ----
 FROM node:20-alpine AS dev
 
 WORKDIR /app
@@ -11,7 +12,7 @@ EXPOSE 3030
 
 CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "3030"]
 
-# ---- Production build stage ----
+# ---- Production build ----
 FROM node:20-alpine AS builder
 
 WORKDIR /app
@@ -24,17 +25,19 @@ COPY . .
 ARG NUXT_PUBLIC_API_BASE=https://api-toi.daraedu.kz
 ENV NUXT_PUBLIC_API_BASE=$NUXT_PUBLIC_API_BASE
 
-RUN npm run generate
+RUN npm run build
 
-# ---- Production static serving ----
-FROM node:20-alpine
+# ---- Production SSR server ----
+FROM node:20-alpine AS production
 
 WORKDIR /app
 
-RUN npm install -g serve
+ENV NODE_ENV=production
+ENV PORT=3030
+ENV NUXT_PUBLIC_API_BASE=https://api-toi.daraedu.kz
 
-COPY --from=builder /app/dist ./public
+COPY --from=builder /app/.output ./.output
 
 EXPOSE 3030
 
-CMD ["serve", "-s", "public", "-l", "3030"]
+CMD ["node", ".output/server/index.mjs"]

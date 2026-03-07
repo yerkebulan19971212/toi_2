@@ -266,6 +266,7 @@ useHead({ title: 'Шақыру жасау — Shaqyru.kz' })
 
 const route = useRoute()
 const { post } = useApi()
+const requestURL = useRequestURL()
 
 const currentStep = ref(0)
 const submitting = ref(false)
@@ -321,10 +322,7 @@ const submit = async () => {
 
 const inviteUrl = computed(() => {
   if (!createdSlug.value) return ''
-  if (process.client) {
-    return `${window.location.origin}/invite/${createdSlug.value}`
-  }
-  return `/invite/${createdSlug.value}`
+  return `${requestURL.origin}/invite/${createdSlug.value}`
 })
 
 const copyLink = async () => {

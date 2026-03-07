@@ -1,5 +1,5 @@
 export default defineNuxtConfig({
-  ssr: false,
+  ssr: true,
 
   devtools: { enabled: false },
 
@@ -47,12 +47,6 @@ export default defineNuxtConfig({
           href: 'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap',
         },
       ],
-    },
-  },
-
-  nitro: {
-    output: {
-      publicDir: 'dist',
     },
   },
 

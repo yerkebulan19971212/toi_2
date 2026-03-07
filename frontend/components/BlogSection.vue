@@ -93,26 +93,15 @@
 
 <script setup>
 const { get } = useApi()
-const posts = ref([])
-const loading = ref(true)
-const error = ref('')
 
-onMounted(async () => {
-  loading.value = true
-  error.value = ''
-  try {
-    const data = await get('/api/blog/')
-    posts.value = data.results ?? data ?? []
-  } catch (e) {
-    console.error('fetch blog:', e)
-    error.value = 'Жаңалықтарды жүктеу мүмкін болмады.'
-    posts.value = []
-  } finally {
-    loading.value = false
-  }
-})
+const { data: posts, pending: loading, error: fetchError } = await useAsyncData(
+  'blog-section-posts',
+  () => get('/api/blog/').then((r) => r.results ?? r ?? []).catch(() => [])
+)
 
-const displayPosts = computed(() => posts.value.slice(0, 3))
+const error = computed(() => (fetchError.value ? 'Жаңалықтарды жүктеу мүмкін болмады.' : ''))
+
+const displayPosts = computed(() => (posts.value || []).slice(0, 3))
 
 const formatDate = (dateStr) => {
   if (!dateStr) return ''

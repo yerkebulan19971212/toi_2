@@ -1,6 +1,6 @@
 <script setup>
 import axios from 'axios'
-import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 
 const props = defineProps({
   slug: {
@@ -9,64 +9,22 @@ const props = defineProps({
   },
 })
 
-const loading = ref(false)
+const loading = ref(true)
 const error = ref('')
+const renderedHtml = ref('')
+const invitation = ref(null)
 
-const event = reactive({
-  title: '',
-  subtitle: 'Онлайн шақыру',
-  coupleNames: '',
-  date: '',
-  time: '',
-  location: '',
-  description: '',
-})
-
-const stats = ref([
-  { label: 'Қонақтар', value: '0' },
-  { label: 'Үстелдер', value: '—' },
-  { label: 'Қатысушылар', value: '—' },
-])
-
-const guestForm = reactive({
-  name: '',
-  phone: '',
-  status: 'yes',
-  table_number: '',
-  notes: '',
-})
-
-const submitting = ref(false)
-const submitMessage = ref('')
-
-const apiBase = computed(() => {
-  // Django по умолчанию крутится на 8000
-  return `${window.location.origin}/api/invitations`
-})
+const apiBase = computed(() => `${window.location.origin}/api/invitations`)
+const htmlPageUrl = computed(() => `/i/${props.slug}/`)
 
 async function loadInvitation() {
   loading.value = true
   error.value = ''
-  submitMessage.value = ''
+  renderedHtml.value = ''
   try {
     const { data } = await axios.get(`${apiBase.value}/${props.slug}/`)
-    event.coupleNames = data.couple_names
-    event.date = data.date
-    event.time = data.time
-    event.location = data.location
-    event.description =
-      data.description ||
-      'Сізді біздің ең қуанышты күнімізге ортақтасуға шақырамыз. Төменде өзіңізге қолайлы статусты таңдап, қатысуыңызды растаңыз.'
-    event.title = data.title || 'Shaqyru.kz'
-
-    const guests = data.guests || []
-    const total = guests.length
-    const yesCount = guests.filter(g => g.status === 'yes').length
-    stats.value = [
-      { label: 'Қонақтар', value: total ? `${total}` : '0' },
-      { label: 'Үстелдер', value: '—' },
-      { label: 'Қатысушылар', value: total ? `${Math.round((yesCount / total) * 100)}%` : '—' },
-    ]
+    invitation.value = data
+    renderedHtml.value = data.rendered_html || ''
   } catch (e) {
     error.value = 'Шақыру табылмады немесе сервер қателігі.'
     console.error(e)
@@ -75,190 +33,96 @@ async function loadInvitation() {
   }
 }
 
-async function submitGuest(statusOverride) {
-  if (!guestForm.name.trim()) {
-    submitMessage.value = 'Аты-жөні міндетті.'
-    return
-  }
-  submitting.value = true
-  submitMessage.value = ''
-  try {
-    const payload = {
-      name: guestForm.name,
-      phone: guestForm.phone,
-      status: statusOverride || guestForm.status,
-      table_number: guestForm.table_number || null,
-      notes: guestForm.notes,
-    }
-    await axios.post(`${apiBase.value}/${props.slug}/guests/`, payload)
-    submitMessage.value = 'Рахмет! Жауабыңыз сақталды.'
-    guestForm.name = ''
-    guestForm.phone = ''
-    guestForm.table_number = ''
-    guestForm.notes = ''
-    await loadInvitation()
-  } catch (e) {
-    submitMessage.value = 'Қате кетті. Кейінірек қайталап көріңіз.'
-    console.error(e)
-  } finally {
-    submitting.value = false
-  }
-}
-
 onMounted(loadInvitation)
 
-watch(
-  () => props.slug,
-  () => {
-    loadInvitation()
-  }
-)
+watch(() => props.slug, loadInvitation)
 </script>
 
 <template>
-  <main class="page">
-    <section class="hero">
-      <div class="hero-card">
-        <header class="hero-header">
-          <p class="hero-pill">Shaqyru.kz · Wedding invite</p>
-          <h1 class="hero-title">
-            {{ event.coupleNames }}
-          </h1>
-          <p class="hero-subtitle">
-            {{ event.subtitle }}
-          </p>
-        </header>
+  <div class="inv-wrap">
+    <div v-if="loading" class="center-msg">Жүктелуде…</div>
 
-        <div v-if="!error" class="hero-body">
-          <div class="hero-info">
-            <div class="info-row">
-              <span class="info-label">Күні</span>
-              <span class="info-value">{{ event.date }}</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">Уақыты</span>
-              <span class="info-value">{{ event.time }}</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">Мекенжай</span>
-              <span class="info-value">{{ event.location }}</span>
-            </div>
-          </div>
+    <div v-else-if="error" class="center-msg error">{{ error }}</div>
 
-          <p class="hero-description">
-            {{ event.description }}
-          </p>
-
-          <div class="hero-actions">
-            <button
-              type="button"
-              class="btn btn-primary"
-              :disabled="submitting"
-              @click="submitGuest('yes')"
-            >
-              Қатысамын
-            </button>
-            <button
-              type="button"
-              class="btn btn-secondary"
-              :disabled="submitting"
-              @click="submitGuest('no')"
-            >
-              Қатыса алмаймын
-            </button>
-          </div>
-        </div>
-
-        <p v-if="error" class="error-text">
-          {{ error }}
-        </p>
-
-        <footer v-else class="hero-footer">
-          <div
-            v-for="item in stats"
-            :key="item.label"
-            class="stat"
-          >
-            <p class="stat-value">{{ item.value }}</p>
-            <p class="stat-label">{{ item.label }}</p>
-          </div>
-        </footer>
+    <template v-else>
+      <!-- Open full page button -->
+      <div class="open-bar">
+        <a :href="htmlPageUrl" target="_blank" class="open-btn">
+          Толық беттен ашу ↗
+        </a>
       </div>
-    </section>
 
-    <section class="details">
-      <div class="details-card">
-        <h2 class="details-title">Қонақ деректерін толтыру</h2>
-        <p class="details-text">
-          Бұл жерде кейін Django арқылы қонақтар тізімі, үстел нөмірлері, RSVP статустар және
-          басқа да деректер байланысады. Қазір бұл статикалық макет, бірақ дизайн мобильді
-          құрылғыларға толық бейімделген.
-        </p>
+      <!-- Rendered invitation HTML in iframe -->
+      <iframe
+        v-if="renderedHtml"
+        :srcdoc="renderedHtml"
+        class="inv-frame"
+        title="Шақыру"
+        sandbox="allow-scripts allow-same-origin allow-forms"
+      />
 
-        <form class="guest-form">
-          <div class="form-grid">
-            <label class="field">
-              <span class="field-label">Аты-жөні</span>
-              <input class="field-input" type="text" placeholder="Қонақтың аты" />
-            </label>
-
-            <label class="field">
-              <span class="field-label">Телефон</span>
-              <input class="field-input" type="tel" placeholder="+7 (___) ___‑__‑__" />
-            </label>
-
-            <label class="field">
-              <span class="field-label">Статус</span>
-              <select v-model="guestForm.status" class="field-input">
-                <option value="yes">Қатысады</option>
-                <option value="no">Қатыса алмайды</option>
-                <option value="maybe">Әлі ойлануда</option>
-              </select>
-            </label>
-
-            <label class="field">
-              <span class="field-label">Үстел</span>
-              <input
-                v-model="guestForm.table_number"
-                class="field-input"
-                type="number"
-                min="1"
-                placeholder="№"
-              />
-            </label>
-          </div>
-
-          <label class="field field-full">
-            <span class="field-label">Қосымша ақпарат</span>
-            <textarea
-              v-model="guestForm.notes"
-              class="field-input field-textarea"
-              rows="3"
-              placeholder="Мысалы: вегетариандық мәзір, балалар саны және т.б."
-            />
-          </label>
-
-          <div class="form-footer">
-            <button
-              type="button"
-              class="btn btn-primary"
-              :disabled="submitting"
-              @click="submitGuest()"
-            >
-              Қонақты қосу
-            </button>
-            <p class="form-hint">
-              Деректер Django API арқылы сақталады, ал шақыру бетінде Vue оларды көрсетеді.
-            </p>
-            <p v-if="submitMessage" class="form-message">
-              {{ submitMessage }}
-            </p>
-          </div>
-        </form>
+      <div v-else class="center-msg">
+        Бұл шақыру үшін рендерленген HTML жоқ.<br>
+        <a :href="htmlPageUrl" class="open-btn" style="margin-top:.8rem;display:inline-block">
+          Беттен ашып көру ↗
+        </a>
       </div>
-    </section>
-  </main>
+    </template>
+  </div>
 </template>
+
+<style scoped>
+.inv-wrap {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.open-bar {
+  padding: 8px 16px;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: right;
+}
+
+.open-btn {
+  display: inline-block;
+  padding: 6px 14px;
+  background: #111;
+  color: #fff;
+  border-radius: 8px;
+  font-size: 13px;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.open-btn:hover {
+  background: #333;
+}
+
+.inv-frame {
+  flex: 1;
+  width: 100%;
+  min-height: calc(100vh - 44px);
+  border: 0;
+}
+
+.center-msg {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  font-size: 15px;
+  color: #6b7280;
+  text-align: center;
+  padding: 2rem;
+}
+
+.center-msg.error {
+  color: #b91c1c;
+}
+</style>
 
 <style scoped>
 .page {

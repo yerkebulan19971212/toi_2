@@ -6,6 +6,7 @@ from .views import (
     GuestCreateView,
     InvitationCreateView,
     InvitationDetailView,
+    InvitationHTMLView,
     RSVPCreateView,
     RSVPResultsView,
     TemplateDetailView,

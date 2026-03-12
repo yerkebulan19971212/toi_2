@@ -31,7 +31,19 @@ class InvitationCategory(NameModel):
 
 
 class InvitationTemplate(models.Model):
+    """
+    HTML template with Jinja2 variables.
+    Only staff can create/edit templates.
+    """
+    IMAGE_LAYOUTS = [
+        ('gallery_top', 'Gallery — Top'),
+        ('gallery_bottom', 'Gallery — Bottom'),
+        ('gallery_grid', '2×N Grid'),
+        ('single_hero', 'Single Hero Image'),
+    ]
+
     name = models.CharField(max_length=255)
+    slug = models.SlugField(unique=True, null=True, blank=True, max_length=255)
     category = models.ForeignKey(
         'invitations.InvitationCategory',
         on_delete=models.PROTECT,
@@ -39,6 +51,17 @@ class InvitationTemplate(models.Model):
         blank=True,
         related_name='templates',
     )
+    description = models.TextField(blank=True)
+    # Raw Jinja2 HTML stored in DB — rendered server-side per invitation
+    html_template = models.TextField(
+        blank=True,
+        help_text='Jinja2 HTML. Variables: {{ event_title }}, {{ event_date }}, {{ images }}, etc.',
+    )
+    css_styles = models.TextField(blank=True, help_text='Scoped CSS injected into the template')
+    # ["event_title","event_date","images","description", ...]
+    supported_vars = models.JSONField(default=list, blank=True)
+    # ["gallery_top","gallery_grid", ...]
+    supported_image_layouts = models.JSONField(default=list, blank=True)
     preview_image = models.ImageField(upload_to='templates/', blank=True, null=True)
     gradient_from = models.CharField(max_length=20, default='#667eea')
     gradient_to = models.CharField(max_length=20, default='#764ba2')
@@ -51,23 +74,49 @@ class InvitationTemplate(models.Model):
     class Meta:
         ordering = ['-is_featured', 'name']
 
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name) or f'template-{uuid.uuid4().hex[:6]}'
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.name
 
 
 class Invitation(models.Model):
+    IMAGE_LAYOUTS = InvitationTemplate.IMAGE_LAYOUTS
+
     template = models.ForeignKey(
         InvitationTemplate, on_delete=models.SET_NULL, null=True, blank=True
     )
-    slug = models.SlugField(unique=True, blank=True, max_length=120)
-    bride_name = models.CharField(max_length=255)
-    groom_name = models.CharField(max_length=255)
+    slug = models.SlugField(unique=True, null=True, blank=True, max_length=120)
+
+    # --- Wedding-specific legacy fields (kept for backward compat) ---
+    bride_name = models.CharField(max_length=255, blank=True)
+    groom_name = models.CharField(max_length=255, blank=True)
+
+    # --- Generic event fields ---
+    event_title = models.CharField(max_length=300, blank=True)
     date = models.DateField()
-    time = models.TimeField()
-    location = models.CharField(max_length=255)
+    time = models.TimeField(null=True, blank=True)
+    location = models.CharField(max_length=255, blank=True)
     address = models.TextField(blank=True)
     map_url = models.URLField(blank=True)
+    description = models.TextField(blank=True)
+
+    # Extra template variables that don't have a dedicated column
+    extra_data = models.JSONField(default=dict, blank=True)
+
+    # Which image layout to use when rendering
+    image_layout = models.CharField(
+        max_length=50, choices=IMAGE_LAYOUTS, default='gallery_top'
+    )
+
+    # Cached rendered HTML — regenerated on save
+    rendered_html = models.TextField(blank=True)
+
     photo = models.ImageField(upload_to='invitations/', blank=True, null=True)
+    is_published = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -76,14 +125,107 @@ class Invitation(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            base = slugify(f'{self.bride_name}-{self.groom_name}')
+            base = slugify(self.get_display_title())
             self.slug = f'{base}-{uuid.uuid4().hex[:6]}'
         super().save(*args, **kwargs)
 
+    def get_display_title(self):
+        if self.event_title:
+            return self.event_title
+        if self.bride_name and self.groom_name:
+            return f'{self.bride_name}-{self.groom_name}'
+        return self.bride_name or self.groom_name or 'invitation'
+
+    def get_render_context(self):
+        """Build the Jinja2 variable dict for this invitation."""
+        images = list(
+            self.images.values('url', 'placement', 'caption', 'sort_order')
+        )
+        return {
+            'event_title': self.event_title or self.get_display_title(),
+            'event_date': self.date.strftime('%d %B %Y') if self.date else '',
+            'event_time': self.time.strftime('%H:%M') if self.time else '',
+            'event_location': self.location,
+            'map_link': self.map_url,
+            'description': self.description,
+            'images': images,
+            'image_layout': self.image_layout,
+            'bride_name': self.bride_name,
+            'groom_name': self.groom_name,
+            **self.extra_data,
+        }
+
     def __str__(self):
-        return f'{self.bride_name} & {self.groom_name}'
+        return self.get_display_title()
 
 
+class InvitationImage(models.Model):
+    PLACEMENTS = [
+        ('gallery_top', 'Gallery Top'),
+        ('gallery_bottom', 'Gallery Bottom'),
+        ('gallery_grid', 'Gallery Grid'),
+        ('single_hero', 'Single Hero'),
+    ]
+
+    invitation = models.ForeignKey(
+        Invitation, on_delete=models.CASCADE, related_name='images'
+    )
+    url = models.URLField(max_length=1000)
+    placement = models.CharField(
+        max_length=50, choices=PLACEMENTS, default='gallery_top'
+    )
+    caption = models.CharField(max_length=300, blank=True)
+    sort_order = models.PositiveSmallIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['sort_order']
+
+    def __str__(self):
+        return f'{self.placement} — {self.invitation}'
+
+
+class GuestComment(models.Model):
+    invitation = models.ForeignKey(
+        Invitation, on_delete=models.CASCADE, related_name='comments'
+    )
+    guest_name = models.CharField(max_length=200)
+    comment = models.TextField()
+    is_approved = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'{self.guest_name} → {self.invitation}'
+
+
+class RSVPResponse(models.Model):
+    CHOICES = [
+        ('solo', 'Иә, жалғыз өзім барамын!'),
+        ('with_partner', 'Жұбайыммен бірге барамын'),
+        ('declined', 'Өкінішке орай, келе алмаймын'),
+    ]
+
+    invitation = models.ForeignKey(
+        Invitation, on_delete=models.CASCADE, related_name='rsvp_responses'
+    )
+    guest_name = models.CharField(max_length=200)
+    phone = models.CharField(max_length=30, blank=True)
+    response = models.CharField(max_length=20, choices=CHOICES)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        # One RSVP per phone number per invitation
+        unique_together = [('invitation', 'phone')]
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'{self.guest_name} ({self.get_response_display()})'
+
+
+# Keep Guest model for the existing guest-list management feature
 class Guest(models.Model):
     STATUS_CHOICES = [
         ('yes', 'Қатысады'),

@@ -3,6 +3,7 @@ import EventDashboardPage from './components/EventDashboardPage.vue'
 import InvitationPage from './components/InvitationPage.vue'
 import LandingPage from './components/LandingPage.vue'
 import TemplatesPage from './components/TemplatesPage.vue'
+import WeddingTemplate01 from './components/WeddingTemplate01.vue'
 
 const routes = [
   {
@@ -26,6 +27,11 @@ const routes = [
     name: 'invitation',
     component: InvitationPage,
     props: route => ({ slug: route.params.slug || 'ayan-aruzhan' }),
+  },
+  {
+    path: '/wedding-template-01',
+    name: 'wedding-template-01',
+    component: WeddingTemplate01,
   },
 ]
 

@@ -25,6 +25,7 @@ export const PopularInvitations: typeof import("../components/PopularInvitations
 export const SongList: typeof import("../components/SongList.vue")['default']
 export const SongPlayer: typeof import("../components/SongPlayer.vue")['default']
 export const TemplateCard: typeof import("../components/TemplateCard.vue")['default']
+export const WeddingTemplate01: typeof import("../components/WeddingTemplate01.vue")['default']
 export const NuxtWelcome: typeof import("../node_modules/nuxt/dist/app/components/welcome.vue")['default']
 export const NuxtLayout: typeof import("../node_modules/nuxt/dist/app/components/nuxt-layout")['default']
 export const NuxtErrorBoundary: typeof import("../node_modules/nuxt/dist/app/components/nuxt-error-boundary.vue")['default']
@@ -59,6 +60,7 @@ export const LazyPopularInvitations: LazyComponent<typeof import("../components/
 export const LazySongList: LazyComponent<typeof import("../components/SongList.vue")['default']>
 export const LazySongPlayer: LazyComponent<typeof import("../components/SongPlayer.vue")['default']>
 export const LazyTemplateCard: LazyComponent<typeof import("../components/TemplateCard.vue")['default']>
+export const LazyWeddingTemplate01: LazyComponent<typeof import("../components/WeddingTemplate01.vue")['default']>
 export const LazyNuxtWelcome: LazyComponent<typeof import("../node_modules/nuxt/dist/app/components/welcome.vue")['default']>
 export const LazyNuxtLayout: LazyComponent<typeof import("../node_modules/nuxt/dist/app/components/nuxt-layout")['default']>
 export const LazyNuxtErrorBoundary: LazyComponent<typeof import("../node_modules/nuxt/dist/app/components/nuxt-error-boundary.vue")['default']>

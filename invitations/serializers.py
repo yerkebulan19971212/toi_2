@@ -28,7 +28,7 @@ class InvitationTemplateSerializer(serializers.ModelSerializer):
         model = InvitationTemplate
         fields = [
             'id', 'name', 'slug', 'description', 'category', 'category_detail',
-            'supported_vars', 'supported_image_layouts',
+            'supported_vars', 'supported_image_layouts', 'form_schema',
             'preview_image', 'gradient_from', 'gradient_to',
             'price', 'is_free', 'is_featured', 'is_active', 'created_at',
         ]

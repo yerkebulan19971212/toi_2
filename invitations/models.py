@@ -62,6 +62,7 @@ class InvitationTemplate(models.Model):
     supported_vars = models.JSONField(default=list, blank=True)
     # ["gallery_top","gallery_grid", ...]
     supported_image_layouts = models.JSONField(default=list, blank=True)
+    form_schema = models.JSONField(default=dict, blank=True, help_text='Dynamic form field definitions')
     preview_image = models.ImageField(upload_to='templates/', blank=True, null=True)
     gradient_from = models.CharField(max_length=20, default='#667eea')
     gradient_to = models.CharField(max_length=20, default='#764ba2')

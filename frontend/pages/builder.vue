@@ -51,7 +51,8 @@
       <!-- Step 1: Template selection -->
       <div v-if="currentStep === 0" class="animate-slide-up">
         <h2 class="font-serif text-xl font-semibold text-gray-900 mb-5">Үлгі таңдаңыз</h2>
-        <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+        <div v-if="templatesLoading" class="text-center py-12 text-gray-400 font-sans">Жүктелуде...</div>
+        <div v-else class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
           <div
             v-for="tpl in templates"
             :key="tpl.id"
@@ -92,85 +93,31 @@
         </div>
       </div>
 
-      <!-- Step 2: Fill in details -->
+      <!-- Step 2: Fill in details (dynamic from form_schema) -->
       <div v-else-if="currentStep === 1" class="animate-slide-up">
         <h2 class="font-serif text-xl font-semibold text-gray-900 mb-5">Мәліметтерді толтырыңыз</h2>
         <div class="bg-white rounded-2xl shadow-sm p-6 space-y-5">
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <template v-for="field in schemaFields" :key="field.name">
             <div>
               <label class="block text-sm font-sans font-medium text-gray-700 mb-1.5">
-                Бойжеткен есімі *
+                {{ field.label }}<span v-if="field.required" class="text-red-400"> *</span>
               </label>
+              <textarea
+                v-if="field.type === 'textarea'"
+                v-model="formData[field.name]"
+                :placeholder="field.placeholder || ''"
+                rows="2"
+                class="input-field resize-none"
+              />
               <input
-                v-model="form.bride_name"
-                type="text"
-                placeholder="Мысалы: Айгерім"
+                v-else
+                v-model="formData[field.name]"
+                :type="field.type"
+                :placeholder="field.placeholder || ''"
                 class="input-field"
               />
             </div>
-            <div>
-              <label class="block text-sm font-sans font-medium text-gray-700 mb-1.5">
-                Жігіт есімі *
-              </label>
-              <input
-                v-model="form.groom_name"
-                type="text"
-                placeholder="Мысалы: Асан"
-                class="input-field"
-              />
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <div>
-              <label class="block text-sm font-sans font-medium text-gray-700 mb-1.5">
-                Той күні *
-              </label>
-              <input v-model="form.date" type="date" class="input-field" />
-            </div>
-            <div>
-              <label class="block text-sm font-sans font-medium text-gray-700 mb-1.5">
-                Уақыты *
-              </label>
-              <input v-model="form.time" type="time" class="input-field" />
-            </div>
-          </div>
-
-          <div>
-            <label class="block text-sm font-sans font-medium text-gray-700 mb-1.5">
-              Мекеме / Зал атауы *
-            </label>
-            <input
-              v-model="form.location"
-              type="text"
-              placeholder="Мысалы: Рахат сарайы"
-              class="input-field"
-            />
-          </div>
-
-          <div>
-            <label class="block text-sm font-sans font-medium text-gray-700 mb-1.5">
-              Мекен-жай
-            </label>
-            <textarea
-              v-model="form.address"
-              placeholder="Толық мекен-жай..."
-              rows="2"
-              class="input-field resize-none"
-            />
-          </div>
-
-          <div>
-            <label class="block text-sm font-sans font-medium text-gray-700 mb-1.5">
-              Карта сілтемесі (Google Maps)
-            </label>
-            <input
-              v-model="form.map_url"
-              type="url"
-              placeholder="https://maps.google.com/..."
-              class="input-field"
-            />
-          </div>
+          </template>
         </div>
 
         <div class="flex justify-between mt-6">
@@ -265,7 +212,7 @@
 useHead({ title: 'Шақыру жасау — Shaqyru.kz' })
 
 const route = useRoute()
-const { post } = useApi()
+const { get, post } = useApi()
 const requestURL = useRequestURL()
 
 const currentStep = ref(0)
@@ -274,35 +221,36 @@ const error = ref(null)
 const createdSlug = ref(null)
 const copied = ref(false)
 
+const steps = ['Үлгі таңдау', 'Мәліметтер', 'Бөлісу']
+
 const form = reactive({
   template: route.query.template ? Number(route.query.template) : null,
-  bride_name: '',
-  groom_name: '',
-  date: '',
-  time: '',
-  location: '',
-  address: '',
-  map_url: '',
 })
+
+// formData holds all dynamic field values
+const formData = reactive({})
 
 // Start at step 1 if template pre-selected
 if (form.template) currentStep.value = 1
 
-const templates = [
-  { id: 1, name: 'PRESTIGE', gradient_from: '#C9A84C', gradient_to: '#8B6914', price: 2500, is_free: false },
-  { id: 2, name: 'DARАБОЗА', gradient_from: '#2D5016', gradient_to: '#1A3009', price: 3000, is_free: false },
-  { id: 3, name: 'MIRELA', gradient_from: '#7B3F00', gradient_to: '#4A2500', price: 3500, is_free: false },
-  { id: 4, name: 'Алтын той', gradient_from: '#F6C15C', gradient_to: '#E8963C', price: 2000, is_free: false },
-  { id: 5, name: 'Аспан', gradient_from: '#667EEA', gradient_to: '#764BA2', price: 2000, is_free: false },
-  { id: 6, name: 'Арман', gradient_from: '#9333EA', gradient_to: '#EC4899', price: 0, is_free: true },
-]
+// Load templates from API
+const templatesLoading = ref(true)
+const templates = ref([])
+const { data: templatesData } = await useAsyncData('templates', () => get('/api/invitations/templates/'))
+const raw = templatesData.value
+templates.value = Array.isArray(raw) ? raw : (raw?.results ?? [])
+templatesLoading.value = false
+
+const selectedTemplate = computed(() => templates.value.find(t => t.id === form.template) || null)
+
+const schemaFields = computed(() => selectedTemplate.value?.form_schema?.fields || [])
+
+const CORE_FIELDS = new Set(['bride_name', 'groom_name', 'date', 'time', 'location', 'address', 'map_url', 'description', 'event_title'])
 
 const isFormValid = computed(() =>
-  form.bride_name.trim() &&
-  form.groom_name.trim() &&
-  form.date &&
-  form.time &&
-  form.location.trim()
+  schemaFields.value
+    .filter(f => f.required)
+    .every(f => String(formData[f.name] || '').trim())
 )
 
 const submit = async () => {
@@ -310,7 +258,16 @@ const submit = async () => {
   submitting.value = true
   error.value = null
   try {
-    const result = await post('/api/invitations/', { ...form })
+    const payload = { template: form.template, extra_data: {} }
+    for (const field of schemaFields.value) {
+      const val = formData[field.name]
+      if (CORE_FIELDS.has(field.name)) {
+        payload[field.name] = val
+      } else {
+        payload.extra_data[field.name] = val
+      }
+    }
+    const result = await post('/api/invitations/', payload)
     createdSlug.value = result.slug
     currentStep.value = 2
   } catch (e) {

@@ -71,7 +71,7 @@ class InvitationAdmin(admin.ModelAdmin):
     )
     list_filter = ('date', 'is_published', 'image_layout')
     search_fields = ('bride_name', 'groom_name', 'event_title', 'slug')
-    readonly_fields = ('slug', 'rendered_html', 'created_at', 'updated_at')
+    readonly_fields = ('slug', 'created_at', 'updated_at')
     inlines = [InvitationImageInline, GuestCommentInline, RSVPResponseInline]
     fieldsets = (
         (None, {

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{ event_title }}</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Georgia',serif;background:#f0faf4;color:#1a3a2a;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:3rem 1rem 4rem}
+.icon{font-size:2rem;margin-bottom:.5rem}
+.label{font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:#4a8060;margin-bottom:1.2rem}
+.title{font-size:clamp(1.6rem,7vw,2.8rem);font-weight:bold;text-align:center;color:#1a3a2a;line-height:1.2}
+.sep{width:60px;height:2px;background:linear-gradient(90deg,transparent,#4a8060,transparent);margin:1rem auto}
+.card{background:#fff;border-left:3px solid #4a8060;border-radius:0 12px 12px 0;padding:1rem 1.2rem;width:100%;max-width:340px;margin-bottom:.7rem}
+.card-label{font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:#4a8060;margin-bottom:.25rem}
+.card-main{font-size:1.05rem;font-weight:bold}
+.card-sub{font-size:.85rem;color:#567060;margin-top:.15rem}
+.map-link{margin-top:.5rem;display:inline-block;font-size:.8rem;color:#4a8060;text-decoration:underline}
+</style>
+</head>
+<body>
+  <div class="icon">🌿</div>
+  <p class="label">Бесік той шақыруы</p>
+  <div class="title">{{ event_title }}</div>
+  <div class="sep"></div>
+  <div class="card">
+    <div class="card-label">Той күні</div>
+    <div class="card-main">{{ event_date }}</div>
+    {% if event_time %}<div class="card-sub">{{ event_time }}</div>{% endif %}
+  </div>
+  {% if event_location %}
+  <div class="card">
+    <div class="card-label">Орны</div>
+    <div class="card-main">{{ event_location }}</div>
+    {% if address %}<div class="card-sub">{{ address }}</div>{% endif %}
+    {% if map_link %}<a class="map-link" href="{{ map_link }}" target="_blank">Картадан қарау</a>{% endif %}
+  </div>
+  {% endif %}
+  {% if description %}<div class="card"><div class="card-label">Хабарлама</div><div class="card-sub" style="font-size:.9rem">{{ description }}</div></div>{% endif %}
+  <div id="rsvp-section"></div>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{ event_title }}</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Georgia',serif;background:#fdf0e0;color:#3a1a00;min-height:100vh}
+.header{background:linear-gradient(135deg,#8b3a0f,#c05010);padding:3rem 1.5rem 2rem;text-align:center}
+.header-ornament{font-size:1.4rem;color:rgba(255,220,150,.7);letter-spacing:.4em;margin-bottom:.5rem}
+.header-label{font-size:.65rem;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,220,150,.8)}
+.names{font-size:clamp(2rem,9vw,3.2rem);font-weight:bold;color:#fff;margin:.6rem 0;line-height:1.1;text-align:center}
+.amp{color:rgba(255,220,150,.8);font-style:italic;font-size:1.5rem;display:block}
+.body{padding:2rem 1rem;max-width:440px;margin:0 auto}
+.detail-block{background:#fff;border-radius:12px;padding:1rem 1.2rem;margin-bottom:.8rem;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.detail-label{font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:#a05030;margin-bottom:.2rem}
+.detail-val{font-size:1.05rem;font-weight:bold;color:#3a1a00}
+.detail-sub{font-size:.85rem;color:#666;margin-top:.15rem}
+.map-btn{display:block;margin:.8rem auto 0;width:fit-content;padding:.7rem 1.8rem;background:#8b3a0f;color:#fff;text-decoration:none;border-radius:24px;font-size:.85rem}
+</style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-ornament">❧ ❧ ❧</div>
+    <p class="header-label">Той шақыруы</p>
+    <div class="names">{{ bride_name }}<span class="amp">&amp;</span>{{ groom_name }}</div>
+  </div>
+  <div class="body">
+    <div class="detail-block">
+      <div class="detail-label">Той күні</div>
+      <div class="detail-val">{{ event_date }}</div>
+      {% if event_time %}<div class="detail-sub">{{ event_time }}</div>{% endif %}
+    </div>
+    {% if event_location %}
+    <div class="detail-block">
+      <div class="detail-label">Орны</div>
+      <div class="detail-val">{{ event_location }}</div>
+      {% if address %}<div class="detail-sub">{{ address }}</div>{% endif %}
+      {% if map_link %}<a class="map-btn" href="{{ map_link }}" target="_blank">Картада қарау</a>{% endif %}
+    </div>
+    {% endif %}
+    {% if description %}<div class="detail-block"><div class="detail-label">Хабарлама</div><div class="detail-sub" style="font-size:.95rem">{{ description }}</div></div>{% endif %}
+  </div>
+  <div id="rsvp-section"></div>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{ event_title }}</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,sans-serif;background:linear-gradient(180deg,#e8f4ff 0%,#c8e6ff 100%);color:#1a3050;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:3rem 1rem 4rem}
+.cloud{font-size:1.6rem;margin-bottom:.5rem;opacity:.6}
+.label{font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:#5090c0;margin-bottom:1.2rem}
+.names{font-size:clamp(2rem,9vw,3.4rem);font-weight:700;text-align:center;line-height:1.1;color:#1a3050}
+.amp{color:#5090c0;font-size:1.4rem;display:block;margin:.3rem 0;font-weight:300}
+.line{width:50px;height:2px;background:#5090c0;border-radius:2px;margin:1.2rem auto}
+.card{background:#fff;border-radius:16px;padding:1rem 1.4rem;width:100%;max-width:340px;margin-bottom:.7rem;box-shadow:0 4px 20px rgba(80,144,192,.12);text-align:center}
+.card-label{font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:#5090c0;margin-bottom:.3rem}
+.card-main{font-size:1.1rem;font-weight:700;color:#1a3050}
+.card-sub{font-size:.85rem;color:#6080a0;margin-top:.15rem}
+.map-link{margin-top:.5rem;display:inline-block;font-size:.8rem;color:#5090c0;text-decoration:underline}
+</style>
+</head>
+<body>
+  <div class="cloud">☁</div>
+  <p class="label">Той шақыруы</p>
+  <div class="names">{{ bride_name }}<span class="amp">&amp;</span>{{ groom_name }}</div>
+  <div class="line"></div>
+  <div class="card">
+    <div class="card-label">Той күні</div>
+    <div class="card-main">{{ event_date }}</div>
+    {% if event_time %}<div class="card-sub">{{ event_time }}</div>{% endif %}
+  </div>
+  {% if event_location %}
+  <div class="card">
+    <div class="card-label">Орны</div>
+    <div class="card-main">{{ event_location }}</div>
+    {% if address %}<div class="card-sub">{{ address }}</div>{% endif %}
+    {% if map_link %}<a class="map-link" href="{{ map_link }}" target="_blank">Картадан қарау</a>{% endif %}
+  </div>
+  {% endif %}
+  <div id="rsvp-section"></div>
+</body>
+</html>

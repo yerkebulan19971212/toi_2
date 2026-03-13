@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{ event_title }}</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Georgia',serif;background:#0d0d0d;color:#e8d5a3;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:3rem 1rem}
+.ornament{font-size:1.2rem;letter-spacing:.5em;color:#c9a84c;margin-bottom:1rem}
+.eyebrow{font-size:.6rem;letter-spacing:.35em;text-transform:uppercase;color:#888;margin-bottom:1.5rem}
+.names{font-size:clamp(2rem,9vw,3.5rem);font-weight:400;text-align:center;line-height:1.15;color:#f0e0b0;letter-spacing:.08em}
+.names .amp{color:#c9a84c;font-style:italic}
+.divider{width:60px;height:1px;background:linear-gradient(90deg,transparent,#c9a84c,transparent);margin:1.5rem auto}
+.info{display:grid;gap:.8rem;width:100%;max-width:340px;margin:1rem 0}
+.info-row{display:flex;justify-content:space-between;border-bottom:1px solid rgba(201,168,76,.15);padding-bottom:.6rem;font-size:.9rem}
+.info-label{color:#888;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;align-self:center}
+.info-val{color:#f0e0b0;font-weight:bold;text-align:right}
+.map-btn{margin-top:1.5rem;display:inline-block;padding:.7rem 2rem;border:1px solid #c9a84c;color:#c9a84c;text-decoration:none;font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;border-radius:2px;transition:.2s}
+.map-btn:hover{background:#c9a84c;color:#0d0d0d}
+</style>
+</head>
+<body>
+  <div class="ornament">— ✦ —</div>
+  <p class="eyebrow">Той шақыруы</p>
+  <div class="names">{{ bride_name }}<br><span class="amp">&amp;</span><br>{{ groom_name }}</div>
+  <div class="divider"></div>
+  <div class="info">
+    <div class="info-row"><span class="info-label">Күні</span><span class="info-val">{{ event_date }}</span></div>
+    {% if event_time %}<div class="info-row"><span class="info-label">Уақыты</span><span class="info-val">{{ event_time }}</span></div>{% endif %}
+    {% if event_location %}<div class="info-row"><span class="info-label">Мекеме</span><span class="info-val">{{ event_location }}</span></div>{% endif %}
+    {% if address %}<div class="info-row"><span class="info-label">Мекен-жай</span><span class="info-val">{{ address }}</span></div>{% endif %}
+  </div>
+  {% if map_link %}<a class="map-btn" href="{{ map_link }}" target="_blank">Картада қарау</a>{% endif %}
+  <div id="rsvp-section"></div>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, 'Helvetica Neue', sans-serif; background: #f9f9f7; color: #111; }
+  .page { max-width: 480px; margin: 0 auto; padding: 56px 24px; }
+  .tag { font-size: 0.7rem; letter-spacing: 4px; text-transform: uppercase; color: #888; }
+  .names { font-size: 3rem; font-weight: 700; line-height: 1.1; margin: 12px 0 24px; }
+  .names span { color: #888; font-weight: 300; font-size: 1.8rem; display: block; }
+  .line { width: 40px; height: 3px; background: #111; margin-bottom: 32px; }
+  .row { display: flex; gap: 8px; margin-bottom: 16px; }
+  .pill { background: #fff; border: 1px solid #e8e8e8; border-radius: 8px; padding: 12px 16px; flex: 1; }
+  .pill-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 2px; color: #aaa; margin-bottom: 4px; }
+  .pill-value { font-size: 0.95rem; font-weight: 600; }
+  .venue { background: #fff; border: 1px solid #e8e8e8; border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+  .map-btn { display: block; background: #111; color: #fff; text-align: center; padding: 16px; border-radius: 12px; text-decoration: none; font-size: 0.85rem; letter-spacing: 1px; margin-top: 24px; }
+</style>
+</head>
+<body>
+<div class="page">
+  <p class="tag">Үйлену шақыруы</p>
+  <h1 class="names">{{ bride_name }}<span>&amp; {{ groom_name }}</span></h1>
+  <div class="line"></div>
+  <div class="row">
+    <div class="pill">
+      <div class="pill-label">Күні</div>
+      <div class="pill-value">{{ event_date }}</div>
+    </div>
+    <div class="pill">
+      <div class="pill-label">Уақыты</div>
+      <div class="pill-value">{{ event_time }}</div>
+    </div>
+  </div>
+  {% if event_location %}
+  <div class="venue">
+    <div class="pill-label">Мекеме</div>
+    <div class="pill-value" style="margin-top:4px">{{ event_location }}</div>
+    {% if address %}<div style="font-size:0.85rem;color:#888;margin-top:4px">{{ address }}</div>{% endif %}
+  </div>
+  {% endif %}
+  {% if map_link %}
+  <a href="{{ map_link }}" class="map-btn">→ Картада ашу</a>
+  {% endif %}
+</div>
+</body>
+</html>

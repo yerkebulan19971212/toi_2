@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Georgia', serif; background: #fdf6ec; color: #3a2a1a; }
+  .page { max-width: 480px; margin: 0 auto; text-align: center; padding: 48px 24px; }
+  .ornament { color: #c9a84c; font-size: 2rem; margin-bottom: 8px; }
+  .names { font-size: 2.4rem; font-weight: bold; color: #8b4513; margin: 16px 0; line-height: 1.2; }
+  .divider { width: 80px; height: 2px; background: linear-gradient(90deg, transparent, #c9a84c, transparent); margin: 20px auto; }
+  .detail-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; color: #a08060; margin-top: 20px; }
+  .detail-value { font-size: 1.1rem; color: #3a2a1a; margin-top: 4px; }
+  .map-btn { display: inline-block; margin-top: 28px; background: #c9a84c; color: white; padding: 12px 32px; border-radius: 32px; text-decoration: none; font-size: 0.9rem; letter-spacing: 1px; }
+  .footer { margin-top: 40px; font-size: 0.8rem; color: #c9a84c; letter-spacing: 3px; }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="ornament">✦ ✦ ✦</div>
+  <div class="names">{{ bride_name }}<br>&amp;<br>{{ groom_name }}</div>
+  <div class="ornament" style="font-size:1.2rem">— ❤ —</div>
+  <div class="divider"></div>
+  <p class="detail-label">Той күні</p>
+  <p class="detail-value">{{ event_date }}</p>
+  <p class="detail-label">Уақыты</p>
+  <p class="detail-value">{{ event_time }}</p>
+  {% if event_location %}
+  <p class="detail-label">Мекеме</p>
+  <p class="detail-value">{{ event_location }}</p>
+  {% endif %}
+  {% if address %}
+  <p class="detail-label">Мекен-жай</p>
+  <p class="detail-value">{{ address }}</p>
+  {% endif %}
+  {% if map_link %}
+  <a href="{{ map_link }}" class="map-btn">Картада қарау</a>
+  {% endif %}
+  <div class="footer">✦ ШАҚЫРУ ✦</div>
+</div>
+</body>
+</html>

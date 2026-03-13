@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{ event_title }}</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Georgia',serif;background:#f5fbf0;color:#1a3010;min-height:100vh}
+.hero{background:linear-gradient(135deg,#2d7a3a,#1a5025);padding:3rem 1.5rem 2.5rem;text-align:center}
+.leaf{font-size:1.4rem;opacity:.7;margin-bottom:.5rem}
+.hero-label{font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:rgba(200,240,180,.7);margin-bottom:.8rem}
+.names{font-size:clamp(2rem,9vw,3.4rem);font-weight:bold;color:#fff;line-height:1.1}
+.amp{color:rgba(200,240,180,.6);font-style:italic;font-size:1.5rem;display:block;margin:.2rem 0}
+.body{padding:1.5rem 1rem 2rem;max-width:440px;margin:0 auto}
+.item{background:#fff;border-radius:12px;padding:1rem 1.2rem;margin-bottom:.7rem;border:1px solid #d0ecc0}
+.item-label{font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:#3a7030;margin-bottom:.25rem}
+.item-main{font-size:1.05rem;font-weight:bold;color:#1a3010}
+.item-sub{font-size:.85rem;color:#567050;margin-top:.15rem}
+.map-btn{margin-top:.5rem;display:inline-block;padding:.45rem 1.2rem;background:#2d7a3a;color:#fff;text-decoration:none;border-radius:20px;font-size:.8rem}
+</style>
+</head>
+<body>
+  <div class="hero">
+    <div class="leaf">🌿</div>
+    <p class="hero-label">Той шақыруы</p>
+    <div class="names">{{ bride_name }}<span class="amp">&amp;</span>{{ groom_name }}</div>
+  </div>
+  <div class="body">
+    <div class="item">
+      <div class="item-label">Той күні</div>
+      <div class="item-main">{{ event_date }}</div>
+      {% if event_time %}<div class="item-sub">{{ event_time }}</div>{% endif %}
+    </div>
+    {% if event_location %}
+    <div class="item">
+      <div class="item-label">Орны</div>
+      <div class="item-main">{{ event_location }}</div>
+      {% if address %}<div class="item-sub">{{ address }}</div>{% endif %}
+      {% if map_link %}<a class="map-btn" href="{{ map_link }}" target="_blank">Картада қарау</a>{% endif %}
+    </div>
+    {% endif %}
+    {% if description %}<div class="item"><div class="item-label">Хабарлама</div><div class="item-sub" style="font-size:.9rem">{{ description }}</div></div>{% endif %}
+  </div>
+  <div id="rsvp-section"></div>
+</body>
+</html>

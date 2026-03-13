@@ -244,10 +244,10 @@ class InvitationHTMLView(APIView):
         from .renderer import render_invitation
         invitation = get_object_or_404(Invitation, slug=slug)
 
-        if invitation.template and invitation.template.html_template:
+        if invitation.template and invitation.template.template_file:
             ctx = invitation.get_render_context()
             try:
-                html = render_invitation(invitation.template.html_template, ctx)
+                html = render_invitation(invitation.template.template_file, ctx)
             except Exception:
                 html = invitation.rendered_html or ''
         else:

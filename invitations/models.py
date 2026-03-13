@@ -52,10 +52,10 @@ class InvitationTemplate(models.Model):
         related_name='templates',
     )
     description = models.TextField(blank=True)
-    # Raw Jinja2 HTML stored in DB — rendered server-side per invitation
-    html_template = models.TextField(
-        blank=True,
-        help_text='Jinja2 HTML. Variables: {{ event_title }}, {{ event_date }}, {{ images }}, etc.',
+    # Name of the Jinja2 HTML file in invitations/templates_html/ (without .html extension)
+    template_file = models.CharField(
+        max_length=100, blank=True,
+        help_text='Filename (without .html) in invitations/templates_html/',
     )
     css_styles = models.TextField(blank=True, help_text='Scoped CSS injected into the template')
     # ["event_title","event_date","images","description", ...]

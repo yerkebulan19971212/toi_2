@@ -95,10 +95,10 @@ class InvitationWriteSerializer(serializers.ModelSerializer):
             InvitationImage.objects.create(invitation=invitation, **img)
 
     def _render_and_cache(self, invitation):
-        if invitation.template and invitation.template.html_template:
+        if invitation.template and invitation.template.template_file:
             ctx = invitation.get_render_context()
             invitation.rendered_html = render_invitation(
-                invitation.template.html_template, ctx
+                invitation.template.template_file, ctx
             )
             invitation.save(update_fields=['rendered_html'])
 

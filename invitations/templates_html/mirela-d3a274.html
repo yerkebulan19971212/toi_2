@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{ event_title }}</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400&family=Lato:wght@300;400&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Lato',sans-serif;background:#fdf6f9;color:#3a2030;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:3rem 1.2rem 4rem}
+.top-line{width:40px;height:2px;background:#d4849a;margin-bottom:1.5rem}
+.eyebrow{font-size:.6rem;letter-spacing:.35em;text-transform:uppercase;color:#a06080;margin-bottom:1rem}
+.names{font-family:'Playfair Display',serif;font-size:clamp(2.2rem,9vw,3.8rem);line-height:1.1;text-align:center;color:#7a2040;font-style:italic}
+.amp{color:#d4849a;display:block;font-size:1.8rem;margin:.3rem 0}
+.divider{width:100px;height:1px;background:linear-gradient(90deg,transparent,#d4849a,transparent);margin:1.5rem 0}
+.pill{background:#fff;border:1px solid #f0c0d0;border-radius:14px;padding:1rem 1.4rem;width:100%;max-width:340px;margin-bottom:.7rem;text-align:center}
+.pill-label{font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:#a06080;margin-bottom:.3rem}
+.pill-main{font-size:1.05rem;font-weight:600;color:#7a2040}
+.pill-sub{font-size:.85rem;color:#a08090;margin-top:.2rem}
+.btn-map{margin-top:.6rem;display:inline-block;font-size:.8rem;color:#d4849a;text-decoration:underline}
+</style>
+</head>
+<body>
+  <div class="top-line"></div>
+  <p class="eyebrow">Үйлену тойы</p>
+  <div class="names">{{ bride_name }}<span class="amp">&amp;</span>{{ groom_name }}</div>
+  <div class="divider"></div>
+  <div class="pill">
+    <div class="pill-label">Той күні</div>
+    <div class="pill-main">{{ event_date }}</div>
+    {% if event_time %}<div class="pill-sub">{{ event_time }}</div>{% endif %}
+  </div>
+  {% if event_location %}
+  <div class="pill">
+    <div class="pill-label">Мекен-жай</div>
+    <div class="pill-main">{{ event_location }}</div>
+    {% if address %}<div class="pill-sub">{{ address }}</div>{% endif %}
+    {% if map_link %}<a class="btn-map" href="{{ map_link }}" target="_blank">Картадан қарау</a>{% endif %}
+  </div>
+  {% endif %}
+  <div id="rsvp-section"></div>
+</body>
+</html>

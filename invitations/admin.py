@@ -32,7 +32,7 @@ class InvitationTemplateAdmin(admin.ModelAdmin):
             'fields': ('name', 'slug', 'category', 'description', 'preview_image', 'form_schema'),
         }),
         ('Template', {
-            'fields': ('html_template', 'css_styles', 'supported_vars', 'supported_image_layouts'),
+            'fields': ('template_file', 'css_styles', 'supported_vars', 'supported_image_layouts'),
             'classes': ('wide',),
         }),
         ('Design', {

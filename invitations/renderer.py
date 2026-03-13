@@ -7,22 +7,27 @@ Security:
 - Templates are authored only by staff; user data flows in only as context variables.
 """
 
+from pathlib import Path
+
+from jinja2 import FileSystemLoader, select_autoescape
 from jinja2.sandbox import SandboxedEnvironment
-from jinja2 import BaseLoader, select_autoescape
+
+TEMPLATES_DIR = Path(__file__).parent / 'templates_html'
 
 _env = SandboxedEnvironment(
-    loader=BaseLoader(),
-    autoescape=select_autoescape(['html', 'xml']),
+    loader=FileSystemLoader(str(TEMPLATES_DIR)),
+    autoescape=select_autoescape(['html']),
     trim_blocks=True,
     lstrip_blocks=True,
 )
 
 
-def render_invitation(html_template: str, context: dict) -> str:
+def render_invitation(template_file: str, context: dict) -> str:
     """
-    Render a Jinja2 HTML template string with the given context dict.
+    Render a Jinja2 HTML template file with the given context dict.
+    template_file is the filename without .html extension (e.g. 'classic-wedding').
     Returns the rendered HTML string.
     Raises jinja2.TemplateSyntaxError if the template is malformed.
     """
-    tmpl = _env.from_string(html_template)
+    tmpl = _env.get_template(f'{template_file}.html')
     return tmpl.render(**context)

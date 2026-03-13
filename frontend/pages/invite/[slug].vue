@@ -73,6 +73,8 @@
 </template>
 
 <script setup>
+definePageMeta({ layout: 'blank' })
+
 const route = useRoute()
 const config = useRuntimeConfig()
 const { get, post } = useApi()

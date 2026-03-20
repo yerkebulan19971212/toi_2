@@ -9,6 +9,7 @@ from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from .emails import notify_comment, notify_rsvp
 from .models import (
     Guest,
     GuestComment,
@@ -133,7 +134,8 @@ class GuestCommentListCreateView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         invitation = get_object_or_404(Invitation, slug=self.kwargs['slug'])
-        serializer.save(invitation=invitation)
+        comment = serializer.save(invitation=invitation)
+        notify_comment(invitation, comment)
 
 
 # ---------------------------------------------------------------------------
@@ -146,6 +148,11 @@ class RSVPCreateView(generics.CreateAPIView):
     def perform_create(self, serializer):
         invitation = get_object_or_404(Invitation, slug=self.kwargs['slug'])
         serializer.save(invitation=invitation)
+
+    def perform_create(self, serializer):
+        invitation = get_object_or_404(Invitation, slug=self.kwargs['slug'])
+        rsvp = serializer.save(invitation=invitation)
+        notify_rsvp(invitation, rsvp)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)

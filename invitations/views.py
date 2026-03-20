@@ -260,6 +260,42 @@ class InvitationQRView(APIView):
         return HttpResponse(buf.getvalue(), content_type='image/png')
 
 
+def _build_og_tags(request, invitation):
+    title = invitation.get_display_title()
+    parts = []
+    if invitation.date:
+        parts.append(invitation.date.strftime('%d.%m.%Y'))
+    if invitation.location:
+        parts.append(invitation.location)
+    description = ' · '.join(parts) if parts else 'Той шақыруы'
+
+    page_url = request.build_absolute_uri(f'/i/{invitation.slug}/')
+
+    # Image: invitation photo → template preview → fallback empty
+    image_url = ''
+    if invitation.photo:
+        image_url = request.build_absolute_uri(invitation.photo.url)
+    elif invitation.template and invitation.template.preview_image:
+        image_url = request.build_absolute_uri(invitation.template.preview_image.url)
+
+    def e(s):
+        return str(s).replace('&', '&amp;').replace('"', '&quot;').replace('<', '&lt;').replace('>', '&gt;')
+
+    tags = f'''<meta property="og:type" content="website" />
+<meta property="og:title" content="{e(title)}" />
+<meta property="og:description" content="{e(description)}" />
+<meta property="og:url" content="{e(page_url)}" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="{e(title)}" />
+<meta name="twitter:description" content="{e(description)}" />'''
+
+    if image_url:
+        tags += f'\n<meta property="og:image" content="{e(image_url)}" />'
+        tags += f'\n<meta name="twitter:image" content="{e(image_url)}" />'
+
+    return tags
+
+
 class InvitationHTMLView(APIView):
     """Render invitation HTML page with RSVP form."""
     permission_classes = []
@@ -279,6 +315,15 @@ class InvitationHTMLView(APIView):
 
         if not html:
             html = '<html><body style="font-family:sans-serif;text-align:center;padding:3rem"><p>Шаблон жоқ</p></body></html>'
+
+        # Inject OG meta tags into <head>
+        og_tags = _build_og_tags(request, invitation)
+        if '<head>' in html:
+            html = html.replace('<head>', f'<head>\n{og_tags}', 1)
+        elif '</head>' in html:
+            html = html.replace('</head>', f'{og_tags}\n</head>', 1)
+        else:
+            html = f'<head>{og_tags}</head>' + html
 
         # Inject RSVP form before </body>
         if '</body>' in html:

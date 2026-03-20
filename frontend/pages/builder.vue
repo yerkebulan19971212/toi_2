@@ -294,7 +294,7 @@ const submit = async () => {
 
 const inviteUrl = computed(() => {
   if (!createdSlug.value) return ''
-  return `${requestURL.origin}/invite/${createdSlug.value}`
+  return `${requestURL.origin}/i/${createdSlug.value}/`
 })
 
 const copyLink = async () => {

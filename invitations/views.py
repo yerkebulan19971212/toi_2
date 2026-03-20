@@ -4,6 +4,7 @@ import qrcode
 from django.db.models import Count
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from django.db import models
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -260,6 +261,30 @@ class InvitationQRView(APIView):
         return HttpResponse(buf.getvalue(), content_type='image/png')
 
 
+class InvitationAnalyticsView(APIView):
+    """View + RSVP stats for an invitation. Owner-only."""
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, slug):
+        invitation = get_object_or_404(Invitation, slug=slug, owner=request.user)
+        rsvp_counts = (
+            invitation.rsvp_responses
+            .values('response')
+            .annotate(count=Count('id'))
+        )
+        rsvp = {row['response']: row['count'] for row in rsvp_counts}
+        return Response({
+            'view_count': invitation.view_count,
+            'rsvp': {
+                'solo':         rsvp.get('solo', 0),
+                'with_partner': rsvp.get('with_partner', 0),
+                'declined':     rsvp.get('declined', 0),
+                'total_guests': rsvp.get('solo', 0) + rsvp.get('with_partner', 0) * 2,
+            },
+            'comments_count': invitation.comments.filter(is_approved=True).count(),
+        })
+
+
 def _build_og_tags(request, invitation):
     title = invitation.get_display_title()
     parts = []
@@ -315,6 +340,11 @@ class InvitationHTMLView(APIView):
 
         if not html:
             html = '<html><body style="font-family:sans-serif;text-align:center;padding:3rem"><p>Шаблон жоқ</p></body></html>'
+
+        # Track view (atomic to avoid race conditions)
+        Invitation.objects.filter(pk=invitation.pk).update(
+            view_count=models.F('view_count') + 1
+        )
 
         # Inject OG meta tags into <head>
         og_tags = _build_og_tags(request, invitation)

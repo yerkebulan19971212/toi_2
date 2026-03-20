@@ -68,7 +68,7 @@ class InvitationReadSerializer(serializers.ModelSerializer):
             'description', 'extra_data',
             'image_layout', 'images',
             'rendered_html', 'is_published',
-            'photo', 'guests', 'created_at', 'updated_at',
+            'photo', 'guests', 'view_count', 'created_at', 'updated_at',
         ]
 
 

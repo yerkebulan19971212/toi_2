@@ -4,6 +4,7 @@ from .views import (
     CategoryListView,
     GuestCommentListCreateView,
     GuestCreateView,
+    InvitationAnalyticsView,
     InvitationCreateView,
     InvitationDetailView,
     InvitationHTMLView,
@@ -42,4 +43,7 @@ urlpatterns = [
 
     # QR code
     path('<slug:slug>/qr/', InvitationQRView.as_view(), name='invitation-qr'),
+
+    # Analytics (owner only)
+    path('<slug:slug>/analytics/', InvitationAnalyticsView.as_view(), name='invitation-analytics'),
 ]

@@ -56,6 +56,48 @@
               {{ inv.location }}
             </div>
 
+            <!-- Quick stats row -->
+            <div class="flex items-center gap-3 mb-3 text-xs font-sans text-gray-500">
+              <span title="Қаралым саны">👁 {{ inv.view_count ?? 0 }}</span>
+              <button
+                class="hover:text-brand-green transition-colors underline-offset-2 hover:underline"
+                @click="toggleStats(inv.slug)"
+              >
+                {{ statsOpen === inv.slug ? 'Жабу' : 'Статистика' }}
+              </button>
+            </div>
+
+            <!-- Analytics panel -->
+            <div v-if="statsOpen === inv.slug" class="mb-3 bg-cream-100 rounded-xl p-3">
+              <div v-if="stats[inv.slug]" class="space-y-1.5">
+                <div class="flex justify-between text-xs font-sans">
+                  <span class="text-gray-500">Қаралым</span>
+                  <span class="font-medium text-gray-800">{{ stats[inv.slug].view_count }}</span>
+                </div>
+                <div class="flex justify-between text-xs font-sans">
+                  <span class="text-gray-500">Жалғыз барамын</span>
+                  <span class="font-medium text-green-700">{{ stats[inv.slug].rsvp.solo }}</span>
+                </div>
+                <div class="flex justify-between text-xs font-sans">
+                  <span class="text-gray-500">Жұбайыммен</span>
+                  <span class="font-medium text-blue-600">{{ stats[inv.slug].rsvp.with_partner }}</span>
+                </div>
+                <div class="flex justify-between text-xs font-sans">
+                  <span class="text-gray-500">Келе алмайды</span>
+                  <span class="font-medium text-gray-500">{{ stats[inv.slug].rsvp.declined }}</span>
+                </div>
+                <div class="flex justify-between text-xs font-sans border-t border-gray-200 pt-1.5 mt-1.5">
+                  <span class="text-gray-700 font-medium">Барлығы қонақ</span>
+                  <span class="font-bold text-brand-green">{{ stats[inv.slug].rsvp.total_guests }}</span>
+                </div>
+                <div class="flex justify-between text-xs font-sans">
+                  <span class="text-gray-500">Пікірлер</span>
+                  <span class="font-medium text-gray-800">{{ stats[inv.slug].comments_count }}</span>
+                </div>
+              </div>
+              <div v-else class="text-xs text-gray-400 text-center py-2">Жүктелуде...</div>
+            </div>
+
             <div class="flex gap-2 mb-2">
               <a
                 :href="`/i/${inv.slug}/`"
@@ -72,7 +114,6 @@
               </button>
               <button
                 class="text-xs font-sans font-medium py-2 px-3 rounded-lg bg-cream-100 hover:bg-gray-200 transition-colors"
-                :title="'QR код'"
                 @click="toggleQr(inv.slug)"
               >
                 QR
@@ -118,9 +159,26 @@ const invitations = computed(() => {
 
 const copied = ref(null)
 const qrOpen = ref(null)
+const statsOpen = ref(null)
+const stats = reactive({})
 
 const toggleQr = (slug) => {
   qrOpen.value = qrOpen.value === slug ? null : slug
+}
+
+const toggleStats = async (slug) => {
+  if (statsOpen.value === slug) {
+    statsOpen.value = null
+    return
+  }
+  statsOpen.value = slug
+  if (!stats[slug]) {
+    try {
+      stats[slug] = await get(`/api/invitations/${slug}/analytics/`)
+    } catch {
+      stats[slug] = null
+    }
+  }
 }
 
 const copyLink = async (slug) => {

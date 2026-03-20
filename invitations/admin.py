@@ -68,11 +68,11 @@ class RSVPResponseInline(admin.TabularInline):
 @admin.register(Invitation)
 class InvitationAdmin(admin.ModelAdmin):
     list_display = (
-        'slug', 'get_display_title', 'date', 'location', 'is_published', 'created_at'
+        'slug', 'get_display_title', 'date', 'location', 'view_count', 'is_published', 'created_at'
     )
     list_filter = ('date', 'is_published', 'image_layout')
     search_fields = ('bride_name', 'groom_name', 'event_title', 'slug')
-    readonly_fields = ('slug', 'created_at', 'updated_at')
+    readonly_fields = ('slug', 'view_count', 'created_at', 'updated_at')
     inlines = [InvitationImageInline, GuestCommentInline, RSVPResponseInline]
     fieldsets = (
         (None, {
@@ -94,6 +94,9 @@ class InvitationAdmin(admin.ModelAdmin):
         ('Rendered Output', {
             'fields': ('rendered_html',),
             'classes': ('collapse',),
+        }),
+        ('Analytics', {
+            'fields': ('view_count',),
         }),
         ('Timestamps', {
             'fields': ('created_at', 'updated_at'),

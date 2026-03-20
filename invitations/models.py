@@ -124,6 +124,9 @@ class Invitation(models.Model):
     # Cached rendered HTML — regenerated on save
     rendered_html = models.TextField(blank=True)
 
+    # Analytics
+    view_count = models.PositiveIntegerField(default=0)
+
     photo = models.ImageField(upload_to='invitations/', blank=True, null=True)
     is_published = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)

@@ -1,5 +1,6 @@
 import uuid
 
+from django.conf import settings
 from django.db import models
 from django.utils.text import slugify
 
@@ -87,6 +88,13 @@ class InvitationTemplate(models.Model):
 class Invitation(models.Model):
     IMAGE_LAYOUTS = InvitationTemplate.IMAGE_LAYOUTS
 
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='invitations',
+    )
     template = models.ForeignKey(
         InvitationTemplate, on_delete=models.SET_NULL, null=True, blank=True
     )

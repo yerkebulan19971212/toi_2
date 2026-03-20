@@ -35,6 +35,19 @@
           >
             +7 748 640 90 93
           </a>
+          <template v-if="authStore.isLoggedIn">
+            <NuxtLink to="/my-invitations" class="text-sm font-sans text-gray-600 hover:text-brand-green font-medium transition-colors">
+              {{ authStore.user?.username }}
+            </NuxtLink>
+            <button class="text-sm font-sans text-gray-400 hover:text-red-500 transition-colors" @click="logout">
+              Шығу
+            </button>
+          </template>
+          <template v-else>
+            <NuxtLink to="/login" class="text-sm font-sans text-gray-600 hover:text-brand-green font-medium transition-colors">
+              Кіру
+            </NuxtLink>
+          </template>
           <NuxtLink to="/builder" class="btn-primary text-sm py-2 px-4">
             Шақыру жасау
           </NuxtLink>
@@ -103,6 +116,19 @@
           <NuxtLink to="/builder" class="btn-primary w-full justify-center" @click="menuOpen = false">
             Шақыру жасау
           </NuxtLink>
+          <template v-if="authStore.isLoggedIn">
+            <NuxtLink to="/my-invitations" class="block px-3 py-2.5 rounded-lg text-gray-700 hover:bg-cream-100 hover:text-brand-green font-medium transition-colors" @click="menuOpen = false">
+              Менің шақыруларым
+            </NuxtLink>
+            <button class="block w-full text-left px-3 py-2.5 rounded-lg text-red-500 hover:bg-red-50 font-medium transition-colors" @click="logout">
+              Шығу
+            </button>
+          </template>
+          <template v-else>
+            <NuxtLink to="/login" class="block text-center py-2 text-brand-green font-medium font-sans text-sm" @click="menuOpen = false">
+              Кіру / Тіркелу
+            </NuxtLink>
+          </template>
           <a
             href="tel:+77486409093"
             class="block text-center py-2 text-brand-green font-medium font-sans text-sm"
@@ -118,5 +144,14 @@
 <script setup>
 const menuOpen = ref(false)
 const route = useRoute()
+const authStore = useAuthStore()
+
+onMounted(() => authStore.init())
+
 watch(() => route.path, () => { menuOpen.value = false })
+
+const logout = () => {
+  authStore.logout()
+  navigateTo('/')
+}
 </script>

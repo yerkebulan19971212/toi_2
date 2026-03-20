@@ -1,3 +1,5 @@
+from datetime import date as _date_today
+
 from rest_framework import serializers
 
 from .models import (
@@ -76,6 +78,7 @@ class InvitationReadSerializer(serializers.ModelSerializer):
 
 class InvitationWriteSerializer(serializers.ModelSerializer):
     images = InvitationImageSerializer(many=True, required=False)
+    date = serializers.DateField(required=False)
 
     class Meta:
         model = Invitation
@@ -88,6 +91,7 @@ class InvitationWriteSerializer(serializers.ModelSerializer):
             'image_layout', 'images',
             'photo', 'is_published',
         ]
+
 
     def _save_images(self, invitation, images_data):
         invitation.images.all().delete()
@@ -104,6 +108,7 @@ class InvitationWriteSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         images_data = validated_data.pop('images', [])
+        validated_data.setdefault('date', _date_today.today())
         invitation = Invitation.objects.create(**validated_data)
         self._save_images(invitation, images_data)
         self._render_and_cache(invitation)

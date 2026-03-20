@@ -65,12 +65,20 @@ class InvitationCreateView(generics.CreateAPIView):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        invitation = serializer.save()
-        # Return full read representation after creation
+        owner = request.user if request.user.is_authenticated else None
+        invitation = serializer.save(owner=owner)
         read_serializer = InvitationReadSerializer(
             invitation, context={'request': request}
         )
         return Response(read_serializer.data, status=status.HTTP_201_CREATED)
+
+
+class MyInvitationsView(generics.ListAPIView):
+    serializer_class = InvitationReadSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Invitation.objects.prefetch_related('images').filter(owner=self.request.user)
 
 
 class InvitationDetailView(generics.RetrieveUpdateAPIView):

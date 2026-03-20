@@ -9,6 +9,15 @@ export const useApi = () => {
     headers: { 'Content-Type': 'application/json' },
   })
 
+  // Attach JWT token if available
+  client.interceptors.request.use((cfg) => {
+    if (import.meta.client) {
+      const token = localStorage.getItem('access_token')
+      if (token) cfg.headers.Authorization = `Bearer ${token}`
+    }
+    return cfg
+  })
+
   const get = (endpoint, params = {}) =>
     client.get(endpoint, { params }).then((r) => r.data)
 

@@ -8,6 +8,7 @@ from invitations.views import InvitationHTMLView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/auth/', include('accounts.urls', namespace='accounts')),
     path('api/invitations/', include('invitations.urls', namespace='invitations')),
     path('api/songs/', include('songs.urls', namespace='songs')),
     path('api/blog/', include('blog.urls', namespace='blog')),

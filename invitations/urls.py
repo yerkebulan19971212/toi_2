@@ -7,6 +7,7 @@ from .views import (
     InvitationCreateView,
     InvitationDetailView,
     InvitationHTMLView,
+    MyInvitationsView,
     RSVPCreateView,
     RSVPResultsView,
     TemplateDetailView,
@@ -25,6 +26,7 @@ urlpatterns = [
 
     # Invitations
     path('', InvitationCreateView.as_view(), name='invitation-create'),
+    path('my/', MyInvitationsView.as_view(), name='my-invitations'),
     path('<slug:slug>/', InvitationDetailView.as_view(), name='invitation-detail'),
 
     # Legacy: guest-list management

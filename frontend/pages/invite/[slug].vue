@@ -207,9 +207,14 @@ const rsvp = async (status) => {
   rsvpSent.value = true
 }
 
-useHead(() => ({
-  title: invitation.value
-    ? `${invitation.value.bride_name} & ${invitation.value.groom_name} — Той шақыруы`
-    : 'Шақыру — Shaqyru.kz',
-}))
+const invitationTitle = computed(() => {
+  const inv = invitation.value
+  if (!inv) return 'Шақыру — Shaqyru.kz'
+  const name = inv.event_title || (inv.bride_name && inv.groom_name
+    ? `${inv.bride_name} & ${inv.groom_name}`
+    : inv.bride_name || inv.groom_name || 'Той шақыруы')
+  return `${name} — Той шақыруы`
+})
+
+useHead(() => ({ title: invitationTitle.value }))
 </script>

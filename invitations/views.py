@@ -1,3 +1,6 @@
+import io
+
+import qrcode
 from django.db.models import Count
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -242,6 +245,19 @@ function submitRsvp(choice){
 }
 </script>
 """
+
+
+class InvitationQRView(APIView):
+    """Return a QR code PNG for the public invitation URL."""
+    permission_classes = []
+
+    def get(self, request, slug):
+        get_object_or_404(Invitation, slug=slug)
+        url = request.build_absolute_uri(f'/i/{slug}/')
+        img = qrcode.make(url)
+        buf = io.BytesIO()
+        img.save(buf, format='PNG')
+        return HttpResponse(buf.getvalue(), content_type='image/png')
 
 
 class InvitationHTMLView(APIView):

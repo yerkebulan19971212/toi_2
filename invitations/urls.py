@@ -7,6 +7,7 @@ from .views import (
     InvitationCreateView,
     InvitationDetailView,
     InvitationHTMLView,
+    InvitationQRView,
     MyInvitationsView,
     RSVPCreateView,
     RSVPResultsView,
@@ -38,4 +39,7 @@ urlpatterns = [
     # Public: RSVP
     path('<slug:slug>/rsvp/', RSVPCreateView.as_view(), name='rsvp-create'),
     path('<slug:slug>/rsvp-results/', RSVPResultsView.as_view(), name='rsvp-results'),
+
+    # QR code
+    path('<slug:slug>/qr/', InvitationQRView.as_view(), name='invitation-qr'),
 ]

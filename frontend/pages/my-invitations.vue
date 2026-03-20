@@ -56,7 +56,7 @@
               {{ inv.location }}
             </div>
 
-            <div class="flex gap-2">
+            <div class="flex gap-2 mb-2">
               <a
                 :href="`/i/${inv.slug}/`"
                 target="_blank"
@@ -70,6 +70,23 @@
               >
                 {{ copied === inv.slug ? 'Көшірілді!' : 'Сілтеме' }}
               </button>
+              <button
+                class="text-xs font-sans font-medium py-2 px-3 rounded-lg bg-cream-100 hover:bg-gray-200 transition-colors"
+                :title="'QR код'"
+                @click="toggleQr(inv.slug)"
+              >
+                QR
+              </button>
+            </div>
+
+            <!-- QR popup -->
+            <div v-if="qrOpen === inv.slug" class="text-center pt-2 border-t border-gray-100">
+              <img
+                :src="`/api/invitations/${inv.slug}/qr/`"
+                alt="QR"
+                class="w-32 h-32 mx-auto"
+              />
+              <p class="text-xs text-gray-400 font-sans mt-1">Сканерлеп ашыңыз</p>
             </div>
           </div>
         </div>
@@ -100,6 +117,11 @@ const invitations = computed(() => {
 })
 
 const copied = ref(null)
+const qrOpen = ref(null)
+
+const toggleQr = (slug) => {
+  qrOpen.value = qrOpen.value === slug ? null : slug
+}
 
 const copyLink = async (slug) => {
   const url = `${window.location.origin}/i/${slug}/`

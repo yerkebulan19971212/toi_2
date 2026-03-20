@@ -174,7 +174,7 @@
           </div>
 
           <!-- Share buttons -->
-          <div class="flex flex-wrap justify-center gap-3 mb-8">
+          <div class="flex flex-wrap justify-center gap-3 mb-6">
             <a
               :href="`https://wa.me/?text=${encodeURIComponent(inviteUrl)}`"
               target="_blank"
@@ -191,9 +191,24 @@
             </a>
           </div>
 
-          <NuxtLink to="/" class="btn-secondary">
-            Басты бетке оралу
-          </NuxtLink>
+          <!-- QR Code -->
+          <div v-if="createdSlug" class="bg-white rounded-2xl shadow-sm p-5 mb-6 inline-block">
+            <p class="text-xs text-gray-400 font-sans mb-3 text-center">QR код — телефонмен сканерлеңіз</p>
+            <img
+              :src="`/api/invitations/${createdSlug}/qr/`"
+              alt="QR код"
+              class="w-40 h-40 mx-auto"
+            />
+          </div>
+
+          <div class="flex flex-wrap justify-center gap-3">
+            <NuxtLink to="/my-invitations" class="btn-secondary">
+              Менің шақыруларым
+            </NuxtLink>
+            <NuxtLink to="/" class="btn-secondary">
+              Басты бетке оралу
+            </NuxtLink>
+          </div>
         </div>
       </div>
 

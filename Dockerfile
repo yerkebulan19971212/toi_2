@@ -1,15 +1,14 @@
-FROM python:3.10
+FROM python:3.11-slim
 
-RUN apt update && apt install -y curl
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-ENV PATH="/root/.cargo/bin:${PATH}"
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpq-dev gcc \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-COPY requirements.txt /app/
 
-RUN pip install --upgrade pip
-RUN pip install --no-cache-dir -r requirements.txt
+COPY requirements.txt .
+RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 
-COPY . /app/
+COPY . .
 
-CMD ["gunicorn", "--bind", ":8097", "--workers", "9", "NewToi.wsgi:application"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8097", "--workers", "4", "NewToi.wsgi:application"]

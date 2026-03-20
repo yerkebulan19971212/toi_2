@@ -1,10 +1,41 @@
-version: '3'
+version: '3.8'
+
 services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-shaqyru}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   backend-toi:
     build:
       context: .
       dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DB_HOST: db
     volumes:
-      - .:/app
+      - ./media:/app/media
+      - ./staticfiles:/app/staticfiles
     ports:
       - "8097:8097"
+    depends_on:
+      db:
+        condition: service_healthy
+    command: >
+      sh -c "python manage.py migrate --no-input &&
+             python manage.py collectstatic --no-input &&
+             gunicorn --bind 0.0.0.0:8097 --workers 4 NewToi.wsgi:application"
+
+volumes:
+  postgres_data:

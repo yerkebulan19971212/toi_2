@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{ event_title }}</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:'Cormorant Garamond',Georgia,serif;
+  background:#fff;
+  color:#2c1a0e;
+  min-height:100vh;
+  padding-bottom:100px;
+}
+
+/* ===== HERO ===== */
+.hero{
+  background:#fff;
+  text-align:center;
+  padding:2.2rem 1.2rem 0;
+}
+.hero-names{
+  font-family:'Playfair Display',Georgia,serif;
+  font-size:clamp(2rem,10vw,3.2rem);
+  font-style:italic;
+  color:#2c1a0e;
+  line-height:1.15;
+  margin-bottom:1.4rem;
+  letter-spacing:0.02em;
+}
+.hero-img-wrap{
+  position:relative;
+  width:calc(100% - 2rem);
+  max-width:460px;
+  margin:0 auto;
+  border-radius:8px;
+  overflow:hidden;
+}
+.hero-img{
+  width:100%;
+  display:block;
+  max-height:520px;
+  object-fit:cover;
+}
+.hero-img-fade-top{
+  position:absolute;
+  top:0;left:0;right:0;
+  height:18%;
+  background:linear-gradient(to bottom, #fff, transparent);
+  pointer-events:none;
+}
+.hero-img-fade-bottom{
+  position:absolute;
+  bottom:0;left:0;right:0;
+  height:38%;
+  background:linear-gradient(to bottom, transparent, #fff);
+  pointer-events:none;
+}
+.rings-decor{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:1rem 0 0.2rem;
+}
+
+/* ===== ORNAMENTAL DIVIDER ===== */
+.ornament{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin:1.6rem auto;
+  max-width:380px;
+  padding:0 1.2rem;
+}
+.ornament-line{
+  flex:1;
+  height:1px;
+  background:linear-gradient(to right, transparent, #c8902a 60%);
+}
+.ornament-line.rev{
+  background:linear-gradient(to left, transparent, #c8902a 60%);
+}
+.ornament-svg{
+  flex-shrink:0;
+  margin:0 4px;
+}
+
+/* ===== INVITATION CARD ===== */
+.section-pad{
+  padding:0 1rem;
+  max-width:480px;
+  margin:0 auto;
+}
+.invite-card{
+  background:#f9f8f5;
+  border-radius:18px;
+  padding:2rem 1.6rem 1.6rem;
+  text-align:center;
+  box-shadow:0 2px 16px rgba(44,26,14,.05);
+}
+.invite-heading{
+  font-family:'Playfair Display',serif;
+  font-style:italic;
+  font-size:1.15rem;
+  color:#3a6929;
+  font-weight:700;
+  letter-spacing:0.1em;
+  margin-bottom:1.1rem;
+}
+.invite-text{
+  font-style:italic;
+  font-size:1.1rem;
+  line-height:1.9;
+  color:#2c1a0e;
+}
+.card-divider{
+  margin:1.3rem auto 0;
+  display:block;
+}
+
+/* ===== DETAIL CARDS ===== */
+.detail-card{
+  background:#f9f8f5;
+  border-radius:16px;
+  padding:0.9rem 1.2rem 1rem;
+  margin-bottom:0.8rem;
+  text-align:center;
+  box-shadow:0 2px 12px rgba(44,26,14,.04);
+}
+.detail-label{
+  font-size:0.78rem;
+  color:#c8902a;
+  letter-spacing:0.06em;
+  margin-bottom:0.45rem;
+  font-style:normal;
+  font-family:'Cormorant Garamond',serif;
+}
+.detail-inner{
+  background:#fff;
+  border-radius:10px;
+  padding:0.75rem 1rem;
+}
+.detail-value{
+  font-family:'Playfair Display',serif;
+  font-style:italic;
+  font-size:1.25rem;
+  color:#2c1a0e;
+}
+
+/* ===== LOCATION ===== */
+.location-section{
+  text-align:center;
+  padding:0 1rem;
+  max-width:480px;
+  margin:0 auto;
+}
+.location-pin{
+  display:block;
+  margin:0 auto 0.6rem;
+}
+.location-text{
+  font-family:'Playfair Display',serif;
+  font-style:italic;
+  font-size:1.15rem;
+  line-height:1.65;
+  color:#2c1a0e;
+}
+.map-btn{
+  display:inline-block;
+  margin-top:0.9rem;
+  padding:0.5rem 1.6rem;
+  background:#3a6929;
+  color:#fff;
+  border-radius:24px;
+  font-size:0.85rem;
+  text-decoration:none;
+  font-family:'Cormorant Garamond',serif;
+  letter-spacing:0.04em;
+}
+
+/* ===== COMMENTS ===== */
+.comments-section{
+  margin-top:1.8rem;
+}
+.comments-bg{
+  position:relative;
+  width:100%;
+  overflow:hidden;
+  margin-bottom:0.5rem;
+}
+.comments-bg-img{
+  width:100%;
+  height:170px;
+  object-fit:cover;
+  display:block;
+}
+.comments-bg-fade{
+  position:absolute;
+  bottom:0;left:0;right:0;
+  height:65%;
+  background:linear-gradient(to bottom, transparent, #fff);
+}
+.comments-heading{
+  font-family:'Playfair Display',serif;
+  font-style:italic;
+  font-size:1.1rem;
+  color:#3a6929;
+  font-weight:700;
+  letter-spacing:0.1em;
+  text-align:center;
+  padding:0 1rem;
+  margin-bottom:1.1rem;
+}
+.comments-scroll{
+  display:flex;
+  overflow-x:auto;
+  gap:0.75rem;
+  padding:0.2rem 1rem 0.5rem;
+  scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+}
+.comments-scroll::-webkit-scrollbar{display:none}
+.comment-card{
+  flex:0 0 82%;
+  min-width:240px;
+  background:#fff;
+  border:1px solid #ede9e1;
+  border-radius:16px;
+  padding:1.1rem 1rem 0.9rem;
+  scroll-snap-align:start;
+  box-shadow:0 2px 10px rgba(44,26,14,.06);
+}
+.comment-quote{
+  font-size:2rem;
+  color:#e0d8ca;
+  line-height:0.8;
+  font-family:Georgia,serif;
+  margin-bottom:0.5rem;
+}
+.comment-text{
+  font-size:0.9rem;
+  line-height:1.65;
+  color:#3d2e24;
+  margin-bottom:0.8rem;
+  font-family:'Cormorant Garamond',serif;
+}
+.comment-footer{
+  display:flex;
+  align-items:center;
+  gap:0.55rem;
+  border-top:1px solid #f0ece4;
+  padding-top:0.6rem;
+}
+.comment-avatar{
+  width:34px;height:34px;
+  border-radius:50%;
+  background:#3a6929;
+  color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.72rem;font-weight:700;
+  flex-shrink:0;
+  font-style:normal;
+  font-family:sans-serif;
+}
+.comment-author{font-size:0.82rem;font-weight:700;color:#2c1a0e;font-family:'Cormorant Garamond',serif}
+.comment-date{font-size:0.7rem;color:#aaa;font-style:normal;font-family:sans-serif}
+.comment-likes{
+  margin-left:auto;
+  background:#fee2e2;
+  color:#e53e3e;
+  border-radius:14px;
+  padding:0.2rem 0.55rem;
+  font-size:0.76rem;
+  font-weight:700;
+  font-style:normal;
+  font-family:sans-serif;
+  flex-shrink:0;
+}
+.comments-dots{
+  display:flex;justify-content:center;
+  gap:6px;margin:0.7rem 0 1rem;
+}
+.comments-dots span{
+  display:inline-block;
+  width:8px;height:8px;
+  border-radius:50%;
+  background:#ddd;
+  transition:all .3s;
+}
+.comments-dots span.active{
+  background:#3a6929;
+  width:18px;border-radius:4px;
+}
+.view-all-btn{
+  display:block;
+  max-width:340px;
+  margin:0 auto 2rem;
+  text-align:center;
+  border:2px solid #3a6929;
+  color:#3a6929;
+  border-radius:40px;
+  padding:0.85rem 1rem;
+  font-family:'Playfair Display',serif;
+  font-weight:700;
+  font-size:0.85rem;
+  letter-spacing:0.1em;
+  cursor:pointer;
+  background:none;
+}
+
+/* ===== FIXED BOTTOM BAR ===== */
+.bottom-bar{
+  position:fixed;
+  bottom:0;left:50%;
+  transform:translateX(-50%);
+  width:100%;max-width:520px;
+  padding:0.7rem 1rem 1.3rem;
+  background:linear-gradient(to top, rgba(255,255,255,1) 65%, rgba(255,255,255,0));
+  display:flex;gap:0.6rem;align-items:center;
+  z-index:100;
+}
+.music-btn{
+  display:flex;align-items:center;gap:0.55rem;
+  background:#2e4a1f;
+  color:#fff;border:none;border-radius:40px;
+  padding:0.6rem 1rem 0.6rem 0.6rem;
+  cursor:pointer;flex:1;min-width:0;
+}
+.music-play-icon{
+  width:34px;height:34px;border-radius:50%;
+  background:rgba(255,255,255,0.18);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.music-play-icon svg{width:15px;height:15px;fill:#fff}
+.music-wave{
+  flex:1;display:flex;align-items:center;
+  gap:2px;height:22px;overflow:hidden;
+}
+.music-wave span{
+  display:inline-block;
+  width:3px;border-radius:2px;
+  background:rgba(255,255,255,0.75);
+  animation:wave 1.1s ease-in-out infinite;
+}
+.music-wave span:nth-child(1){height:6px;animation-delay:0s}
+.music-wave span:nth-child(2){height:13px;animation-delay:.1s}
+.music-wave span:nth-child(3){height:20px;animation-delay:.2s}
+.music-wave span:nth-child(4){height:9px;animation-delay:.05s}
+.music-wave span:nth-child(5){height:16px;animation-delay:.35s}
+.music-wave span:nth-child(6){height:22px;animation-delay:.15s}
+.music-wave span:nth-child(7){height:11px;animation-delay:.25s}
+.music-wave span:nth-child(8){height:18px;animation-delay:.4s}
+.music-wave span:nth-child(9){height:7px;animation-delay:.3s}
+.music-wave span:nth-child(10){height:14px;animation-delay:.45s}
+@keyframes wave{
+  0%,100%{transform:scaleY(0.35)}
+  50%{transform:scaleY(1)}
+}
+.music-wave.paused span{animation-play-state:paused;transform:scaleY(0.35)}
+.wish-btn{
+  display:flex;align-items:center;gap:0.4rem;
+  background:#3a6929;color:#fff;
+  border:none;border-radius:40px;
+  padding:0.65rem 1.1rem;
+  cursor:pointer;
+  font-family:'Playfair Display',serif;
+  font-weight:700;font-size:0.82rem;
+  letter-spacing:0.06em;white-space:nowrap;
+  flex-shrink:0;
+}
+.wish-btn svg{width:16px;height:16px;fill:#fff;flex-shrink:0}
+
+/* ===== WISH MODAL ===== */
+.modal-overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,0.45);
+  z-index:200;align-items:flex-end;justify-content:center;
+}
+.modal-overlay.open{display:flex}
+.modal-sheet{
+  background:#fff;border-radius:22px 22px 0 0;
+  width:100%;max-width:500px;
+  padding:1.4rem 1.2rem 2rem;
+  position:relative;
+}
+.modal-handle{
+  width:44px;height:4px;background:#e0ddd8;
+  border-radius:2px;margin:0 auto 1.2rem;
+}
+.modal-title{
+  font-family:'Playfair Display',serif;font-style:italic;
+  font-size:1.1rem;color:#2c1a0e;
+  text-align:center;margin-bottom:1rem;
+}
+.modal-input{
+  width:100%;padding:0.75rem 1rem;
+  border:1.5px solid #e8e4dc;border-radius:12px;
+  font-family:'Cormorant Garamond',serif;
+  font-size:1rem;margin-bottom:0.65rem;
+  resize:none;color:#2c1a0e;outline:none;
+  background:#faf9f7;
+}
+.modal-input:focus{border-color:#c8902a}
+.modal-submit{
+  width:100%;padding:0.9rem;
+  background:#3a6929;color:#fff;
+  border:none;border-radius:14px;
+  font-family:'Playfair Display',serif;
+  font-weight:700;font-size:1rem;cursor:pointer;
+}
+.modal-close{
+  position:absolute;top:1rem;right:1rem;
+  background:none;border:none;
+  font-size:1.3rem;cursor:pointer;color:#bbb;
+}
+.wish-msg{
+  display:none;margin-top:0.65rem;
+  text-align:center;font-size:0.9rem;
+  padding:0.5rem;border-radius:8px;
+}
+.wish-msg.ok{background:#dcfce7;color:#166534}
+.wish-msg.err{background:#fee2e2;color:#991b1b}
+
+/* ===== RSVP OVERRIDE ===== */
+#rsvp-box{
+  background:#f9f8f5 !important;
+  border-radius:18px !important;
+  max-width:440px;
+  margin:0.5rem auto 1rem !important;
+  padding:1.6rem 1.2rem !important;
+  box-shadow:0 2px 16px rgba(44,26,14,.05);
+}
+#rsvp-box h3{
+  font-family:'Playfair Display',serif !important;
+  font-style:italic;color:#2c1a0e !important;
+  font-size:1.05rem !important;
+}
+.rsvp-btn{border-radius:40px !important;font-family:'Cormorant Garamond',serif !important;font-style:italic;font-size:1rem !important}
+.btn-yes{background:#3a6929 !important}
+.btn-pair{background:#3a6929 !important}
+.btn-no{background:#f0ece4 !important;color:#5a4a3a !important}
+</style>
+</head>
+<body>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+  <h1 class="hero-names">{{ bride_name }} &amp; {{ groom_name }}</h1>
+  {% set hero_url = '' %}
+  {% for img in images %}
+    {% if img.placement == 'single_hero' and not hero_url %}
+      {% set hero_url = img.url %}
+    {% endif %}
+  {% endfor %}
+  {% if not hero_url and images %}
+    {% set hero_url = images[0].url %}
+  {% endif %}
+  {% if hero_url %}
+  <div class="hero-img-wrap">
+    <div class="hero-img-fade-top"></div>
+    <img class="hero-img" src="{{ hero_url }}" alt="той фото" loading="eager">
+    <div class="hero-img-fade-bottom"></div>
+  </div>
+  {% endif %}
+
+  <!-- Decorative rings -->
+  <div class="rings-decor">
+    <svg width="90" height="70" viewBox="0 0 90 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Left ring -->
+      <circle cx="33" cy="40" r="22" stroke="#d4a843" stroke-width="5" fill="none"/>
+      <!-- Right ring -->
+      <circle cx="57" cy="40" r="22" stroke="#d4a843" stroke-width="5" fill="none"/>
+      <!-- Small flower top -->
+      <circle cx="45" cy="13" r="4" fill="#e8c96a" opacity="0.8"/>
+      <circle cx="38" cy="10" r="3" fill="#e0b854" opacity="0.6"/>
+      <circle cx="52" cy="10" r="3" fill="#e0b854" opacity="0.6"/>
+      <circle cx="35" cy="16" r="2.5" fill="#c8e8a0" opacity="0.7"/>
+      <circle cx="55" cy="16" r="2.5" fill="#c8e8a0" opacity="0.7"/>
+    </svg>
+  </div>
+</section>
+
+<!-- ===== INVITATION TEXT ===== -->
+<div class="section-pad" style="margin-top:0.6rem">
+  <div class="invite-card">
+    <p class="invite-heading">ҚҰРМЕТТІ ҚОНАҚТАР!</p>
+    <p class="invite-text">{{ description }}</p>
+    <!-- Inner ornamental divider -->
+    <svg class="card-divider" width="200" height="22" viewBox="0 0 200 22">
+      <line x1="0" y1="11" x2="72" y2="11" stroke="#c8902a" stroke-width="1"/>
+      <path d="M80,11 C84,4 88,18 92,11 C96,4 100,18 104,11 C108,4 112,18 116,11 C120,4 124,18 128,11" stroke="#c8902a" stroke-width="1.3" fill="none"/>
+      <circle cx="104" cy="4" r="2.2" fill="#c8902a"/>
+      <line x1="136" y1="11" x2="200" y2="11" stroke="#c8902a" stroke-width="1"/>
+    </svg>
+  </div>
+</div>
+
+<!-- ===== DIVIDER ===== -->
+<div class="ornament">
+  <div class="ornament-line"></div>
+  <svg class="ornament-svg" width="44" height="26" viewBox="0 0 44 26">
+    <path d="M4,13 C8,5 12,21 16,13 C20,5 24,21 28,13 C32,5 36,21 40,13" stroke="#c8902a" stroke-width="1.6" fill="none"/>
+    <circle cx="22" cy="5" r="2.8" fill="#c8902a"/>
+  </svg>
+  <div class="ornament-line rev"></div>
+</div>
+
+<!-- ===== DATE & HOSTS ===== -->
+<div class="section-pad">
+  {% if event_date %}
+  <div class="detail-card">
+    <div class="detail-label">Тойдың басталу уақыты:</div>
+    <div class="detail-inner">
+      <div class="detail-value">{{ event_date }}{% if event_time %} сағат {{ event_time }}{% endif %}</div>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if host_names %}
+  <div class="detail-card">
+    <div class="detail-label">Той иелері:</div>
+    <div class="detail-inner">
+      <div class="detail-value">{{ host_names }}</div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<!-- ===== DIVIDER ===== -->
+<div class="ornament">
+  <div class="ornament-line"></div>
+  <svg class="ornament-svg" width="44" height="26" viewBox="0 0 44 26">
+    <path d="M4,13 C8,5 12,21 16,13 C20,5 24,21 28,13 C32,5 36,21 40,13" stroke="#c8902a" stroke-width="1.6" fill="none"/>
+    <circle cx="22" cy="5" r="2.8" fill="#c8902a"/>
+  </svg>
+  <div class="ornament-line rev"></div>
+</div>
+
+<!-- ===== LOCATION ===== -->
+<div class="location-section">
+  <svg class="location-pin" width="34" height="44" viewBox="0 0 34 44">
+    <defs>
+      <linearGradient id="pinGrad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#e8b84b"/>
+        <stop offset="100%" stop-color="#c8902a"/>
+      </linearGradient>
+    </defs>
+    <path d="M17 0C7.61 0 0 7.61 0 17c0 12.5 17 27 17 27s17-14.5 17-27C34 7.61 26.39 0 17 0z" fill="url(#pinGrad)"/>
+    <circle cx="17" cy="17" r="7" fill="#fff" opacity="0.9"/>
+  </svg>
+  {% if event_location %}
+  <p class="location-text">{{ event_location }}</p>
+  {% endif %}
+  {% if map_link %}
+  <a class="map-btn" href="{{ map_link }}" target="_blank" rel="noopener">Картада қарау</a>
+  {% endif %}
+</div>
+
+<!-- ===== DIVIDER ===== -->
+<div class="ornament">
+  <div class="ornament-line"></div>
+  <svg class="ornament-svg" width="44" height="26" viewBox="0 0 44 26">
+    <path d="M4,13 C8,5 12,21 16,13 C20,5 24,21 28,13 C32,5 36,21 40,13" stroke="#c8902a" stroke-width="1.6" fill="none"/>
+    <circle cx="22" cy="5" r="2.8" fill="#c8902a"/>
+  </svg>
+  <div class="ornament-line rev"></div>
+</div>
+
+<!-- RSVP injected here automatically -->
+
+<!-- ===== COMMENTS / WISHES ===== -->
+<div class="comments-section" id="comments-section">
+  {% set bg_url = '' %}
+  {% for img in images %}
+    {% if img.placement == 'gallery_bottom' and not bg_url %}
+      {% set bg_url = img.url %}
+    {% endif %}
+  {% endfor %}
+  {% if bg_url %}
+  <div class="comments-bg">
+    <img class="comments-bg-img" src="{{ bg_url }}" alt="">
+    <div class="comments-bg-fade"></div>
+  </div>
+  {% endif %}
+
+  <p class="comments-heading">ТОЙҒА ІЗГІ ТІЛЕКТЕР:</p>
+
+  <div class="comments-scroll" id="comments-scroll">
+    <div class="comment-card" style="display:flex;align-items:center;justify-content:center;min-height:90px;color:#bbb;font-style:italic;font-size:.9rem">
+      Жүктелуде...
+    </div>
+  </div>
+  <div class="comments-dots" id="comments-dots"></div>
+
+  <button class="view-all-btn" id="view-all-btn" onclick="openWishModal()">
+    БАРЛЫҚ ТІЛЕКТЕРДІ КӨРУ →
+  </button>
+</div>
+
+<!-- ===== AUDIO ===== -->
+{% if song_url %}
+<audio id="bg-audio" src="{{ song_url }}" loop preload="none"></audio>
+{% endif %}
+
+<!-- ===== BOTTOM BAR ===== -->
+<div class="bottom-bar">
+  {% if song_url %}
+  <button class="music-btn" id="music-btn" onclick="toggleMusic()" aria-label="Музыка">
+    <div class="music-play-icon">
+      <svg id="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      <svg id="pause-icon" viewBox="0 0 24 24" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+    </div>
+    <div class="music-wave paused" id="music-wave">
+      <span></span><span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span><span></span>
+    </div>
+  </button>
+  {% else %}
+  <div style="flex:1"></div>
+  {% endif %}
+  <button class="wish-btn" onclick="openWishModal()">
+    <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
+    ТІЛЕК ЖАЗУ
+  </button>
+</div>
+
+<!-- ===== WISH MODAL ===== -->
+<div class="modal-overlay" id="wish-modal" onclick="modalBgClick(event)">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <button class="modal-close" onclick="closeWishModal()">✕</button>
+    <p class="modal-title">Тойға ізгі тілек жаз</p>
+    <input class="modal-input" id="wish-name" type="text" placeholder="Атыңыз" autocomplete="name">
+    <textarea class="modal-input" id="wish-text" rows="4" placeholder="Тілегіңізді жазыңыз..."></textarea>
+    <button class="modal-submit" onclick="submitWish()">Жіберу</button>
+    <div class="wish-msg" id="wish-msg"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var SLUG = location.pathname.replace(/^\/i\/|\/$/g, '');
+
+  // ---- MUSIC ----
+  var audio = document.getElementById('bg-audio');
+  var playing = false;
+  window.toggleMusic = function(){
+    if (!audio) return;
+    if (playing) {
+      audio.pause();
+      document.getElementById('play-icon').style.display = '';
+      document.getElementById('pause-icon').style.display = 'none';
+      document.getElementById('music-wave').classList.add('paused');
+      playing = false;
+    } else {
+      audio.play().then(function(){
+        document.getElementById('play-icon').style.display = 'none';
+        document.getElementById('pause-icon').style.display = '';
+        document.getElementById('music-wave').classList.remove('paused');
+        playing = true;
+      }).catch(function(){});
+    }
+  };
+
+  // ---- LOAD COMMENTS ----
+  function esc(s){
+    return String(s||'')
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function initials(name){
+    return (name||'?').split(/\s+/).map(function(w){return w[0]||''})
+      .join('').toUpperCase().slice(0,2) || '?';
+  }
+  function formatDate(iso){
+    if(!iso) return '';
+    return iso.slice(0,10).split('-').reverse().join('.');
+  }
+
+  function loadComments(){
+    fetch('/api/invitations/'+SLUG+'/comments/')
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        var scroll = document.getElementById('comments-scroll');
+        var dots   = document.getElementById('comments-dots');
+        if (!data || !data.length) {
+          scroll.innerHTML = '<div class="comment-card" style="display:flex;align-items:center;justify-content:center;min-height:80px;color:#bbb;font-style:italic;font-size:.9rem">Әзірге тілектер жоқ</div>';
+          dots.innerHTML = '';
+          return;
+        }
+        scroll.innerHTML = '';
+        dots.innerHTML   = '';
+        data.forEach(function(c, i){
+          var card = document.createElement('div');
+          card.className = 'comment-card';
+          card.innerHTML =
+            '<div class="comment-quote">\u201c\u201c</div>' +
+            '<p class="comment-text">'+esc(c.comment)+'</p>' +
+            '<div class="comment-footer">' +
+              '<div class="comment-avatar">'+esc(initials(c.guest_name))+'</div>' +
+              '<div>' +
+                '<div class="comment-author">'+esc(c.guest_name)+'</div>' +
+                '<div class="comment-date">'+esc(formatDate(c.created_at))+'</div>' +
+              '</div>' +
+            '</div>';
+          scroll.appendChild(card);
+
+          var dot = document.createElement('span');
+          if (i === 0) dot.className = 'active';
+          dots.appendChild(dot);
+        });
+
+        // Update active dot on scroll
+        scroll.addEventListener('scroll', function(){
+          var cardW = scroll.querySelector('.comment-card').offsetWidth + 12;
+          var idx   = Math.round(scroll.scrollLeft / cardW);
+          dots.querySelectorAll('span').forEach(function(d, i){
+            d.className = i === idx ? 'active' : '';
+          });
+        }, {passive: true});
+      })
+      .catch(function(){});
+  }
+
+  // ---- MODAL ----
+  window.openWishModal = function(){
+    document.getElementById('wish-modal').classList.add('open');
+  };
+  window.closeWishModal = function(){
+    document.getElementById('wish-modal').classList.remove('open');
+  };
+  window.modalBgClick = function(e){
+    if (e.target === document.getElementById('wish-modal')) closeWishModal();
+  };
+  window.submitWish = function(){
+    var name = document.getElementById('wish-name').value.trim();
+    var text = document.getElementById('wish-text').value.trim();
+    var msg  = document.getElementById('wish-msg');
+    if (!name){ alert('Атыңызды жазыңыз'); return; }
+    if (!text){ alert('Тілегіңізді жазыңыз'); return; }
+
+    document.querySelector('.modal-submit').disabled = true;
+    fetch('/api/invitations/'+SLUG+'/comments/', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({guest_name: name, comment: text})
+    }).then(function(r){
+      msg.style.display = 'block';
+      if (r.ok) {
+        msg.className = 'wish-msg ok';
+        msg.textContent = 'Тілегіңіз жіберілді! Рахмет! 🎉';
+        document.getElementById('wish-name').value = '';
+        document.getElementById('wish-text').value = '';
+        setTimeout(function(){
+          closeWishModal();
+          msg.style.display = 'none';
+          msg.className = 'wish-msg';
+          loadComments();
+        }, 2200);
+      } else {
+        msg.className = 'wish-msg err';
+        msg.textContent = 'Қате кетті. Кейінірек қайталаңыз.';
+        document.querySelector('.modal-submit').disabled = false;
+      }
+    }).catch(function(){
+      msg.style.display = 'block';
+      msg.className = 'wish-msg err';
+      msg.textContent = 'Желі қатесі.';
+      document.querySelector('.modal-submit').disabled = false;
+    });
+  };
+
+  // Init
+  loadComments();
+})();
+</script>
+</body>
+</html>

@@ -38,13 +38,13 @@
             </svg>
             <span v-else>{{ i + 1 }}</span>
           </div>
-          <div class="flex flex-col items-start ml-2 mr-6">
+          <div class="hidden sm:flex flex-col items-start ml-2 mr-6">
             <span
               class="text-xs font-sans font-semibold"
               :class="currentStep === i ? 'text-brand-green' : 'text-gray-400'"
             >{{ step }}</span>
           </div>
-          <div v-if="i < steps.length - 1" class="w-8 h-px bg-gray-200 mr-6" />
+          <div v-if="i < steps.length - 1" class="w-4 sm:w-8 h-px bg-gray-200 mr-2 sm:mr-6" />
         </div>
       </div>
 
@@ -102,8 +102,48 @@
               <label class="block text-sm font-sans font-medium text-gray-700 mb-1.5">
                 {{ field.label }}<span v-if="field.required" class="text-red-400"> *</span>
               </label>
+
+              <!-- Image list upload -->
+              <template v-if="field.type === 'image_list'">
+                <div
+                  class="border-2 border-dashed border-gray-200 rounded-xl p-5 text-center cursor-pointer hover:border-brand-green/50 transition-colors"
+                  @click="triggerPhotoInput(field.name)"
+                  @dragover.prevent
+                  @drop.prevent="onPhotoDrop($event, field.name)"
+                >
+                  <input
+                    :ref="el => photoInputRefs[field.name] = el"
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    multiple
+                    class="hidden"
+                    @change="onPhotoChange($event, field.name)"
+                  />
+                  <svg class="w-8 h-8 text-gray-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                  </svg>
+                  <p class="text-sm text-gray-400 font-sans">Суреттерді осы жерге сүйреңіз немесе <span class="text-brand-green font-medium">таңдаңыз</span></p>
+                  <p class="text-xs text-gray-300 mt-1">JPG, PNG, WEBP · Макс {{ field.max_count || 6 }} сурет · {{ field.max_size_mb || 5 }} МБ</p>
+                </div>
+                <!-- Previews -->
+                <div v-if="photoPreviews[field.name]?.length" class="grid grid-cols-3 gap-2 mt-3">
+                  <div
+                    v-for="(src, idx) in photoPreviews[field.name]"
+                    :key="idx"
+                    class="relative aspect-square rounded-lg overflow-hidden group"
+                  >
+                    <img :src="src" class="w-full h-full object-cover" />
+                    <button
+                      type="button"
+                      class="absolute top-1 right-1 w-5 h-5 bg-black/50 rounded-full text-white text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                      @click.stop="removePhoto(field.name, idx)"
+                    >✕</button>
+                  </div>
+                </div>
+              </template>
+
               <textarea
-                v-if="field.type === 'textarea'"
+                v-else-if="field.type === 'textarea'"
                 v-model="formData[field.name]"
                 :placeholder="field.placeholder || ''"
                 rows="2"
@@ -227,7 +267,7 @@
 useHead({ title: 'Шақыру жасау — Shaqyru.kz' })
 
 const route = useRoute()
-const { get, post } = useApi()
+const { get, post, postForm } = useApi()
 const requestURL = useRequestURL()
 
 const currentStep = ref(0)
@@ -244,6 +284,43 @@ const form = reactive({
 
 // formData holds all dynamic field values
 const formData = reactive({})
+
+// Photo uploads: { [fieldName]: File[] }
+const photoFiles = reactive({})
+const photoPreviews = reactive({})
+const photoInputRefs = reactive({})
+
+const triggerPhotoInput = (fieldName) => {
+  photoInputRefs[fieldName]?.click()
+}
+
+const addPhotos = (fieldName, files, maxCount = 6) => {
+  if (!photoFiles[fieldName]) photoFiles[fieldName] = []
+  if (!photoPreviews[fieldName]) photoPreviews[fieldName] = []
+  for (const file of files) {
+    if (photoFiles[fieldName].length >= maxCount) break
+    photoFiles[fieldName].push(file)
+    photoPreviews[fieldName].push(URL.createObjectURL(file))
+  }
+}
+
+const onPhotoChange = (event, fieldName) => {
+  const field = schemaFields.value.find(f => f.name === fieldName)
+  addPhotos(fieldName, Array.from(event.target.files), field?.max_count || 6)
+  event.target.value = ''
+}
+
+const onPhotoDrop = (event, fieldName) => {
+  const field = schemaFields.value.find(f => f.name === fieldName)
+  const files = Array.from(event.dataTransfer.files).filter(f => f.type.startsWith('image/'))
+  addPhotos(fieldName, files, field?.max_count || 6)
+}
+
+const removePhoto = (fieldName, idx) => {
+  URL.revokeObjectURL(photoPreviews[fieldName][idx])
+  photoFiles[fieldName].splice(idx, 1)
+  photoPreviews[fieldName].splice(idx, 1)
+}
 
 // Start at step 1 if template pre-selected
 if (form.template) currentStep.value = 1
@@ -273,16 +350,31 @@ const submit = async () => {
   submitting.value = true
   error.value = null
   try {
-    const payload = { template: form.template, extra_data: {} }
+    const extra_data = {}
+    const fd = new FormData()
+    fd.append('template', form.template)
+
     for (const field of schemaFields.value) {
+      if (field.type === 'image_list') continue
       const val = formData[field.name]
+      if (val == null || val === '') continue
       if (CORE_FIELDS.has(field.name)) {
-        payload[field.name] = val
+        fd.append(field.name, val)
       } else {
-        payload.extra_data[field.name] = val
+        extra_data[field.name] = val
       }
     }
-    const result = await post('/api/invitations/', payload)
+    fd.append('extra_data', JSON.stringify(extra_data))
+
+    // Append all photo files
+    for (const field of schemaFields.value) {
+      if (field.type !== 'image_list') continue
+      for (const file of (photoFiles[field.name] || [])) {
+        fd.append('photos', file)
+      }
+    }
+
+    const result = await postForm('/api/invitations/', fd)
     createdSlug.value = result.slug
     currentStep.value = 2
   } catch (e) {

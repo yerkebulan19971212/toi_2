@@ -1,5 +1,5 @@
 <template>
-  <section class="relative overflow-hidden bg-cream-100 pt-12 pb-20 md:pt-20 md:pb-28">
+  <section class="relative overflow-hidden bg-cream-100 pt-12 pb-20 md:pt-20 md:pb-28 xl:pt-28 xl:pb-36 2xl:pt-32 2xl:pb-44">
     <!-- Background decorative blobs -->
     <div
       class="absolute -top-24 -right-24 w-96 h-96 bg-brand-gold/10 rounded-full blur-3xl pointer-events-none"
@@ -13,7 +13,7 @@
         <!-- Left: Text content -->
         <div class="animate-slide-up">
           <p class="section-label mb-4">Той шақыруы</p>
-          <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6">
+          <h1 class="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-gray-900 leading-tight mb-6">
             Тойыңызға<br />
             <span class="text-brand-green">арнайы шақыру</span><br />
             5 минутта дайын
@@ -24,7 +24,7 @@
           </p>
 
           <div class="flex flex-wrap gap-3 mb-10">
-            <NuxtLink to="/builder" class="btn-primary text-base px-7 py-3.5">
+            <NuxtLink to="/templates" class="btn-primary text-base px-7 py-3.5">
               Шақыру жасау
             </NuxtLink>
             <NuxtLink to="/templates" class="btn-secondary text-base px-7 py-3.5">
@@ -42,7 +42,7 @@
         </div>
 
         <!-- Right: Phone mockup -->
-        <div class="flex justify-center lg:justify-end animate-fade-in">
+        <div class="hidden sm:flex justify-center lg:justify-end animate-fade-in">
           <div class="relative">
             <!-- Decorative ring -->
             <div
@@ -50,7 +50,7 @@
             />
             <!-- Phone frame -->
             <div
-              class="relative w-[280px] md:w-[300px] bg-gray-900 rounded-[2.5rem] shadow-2xl border-4 border-gray-800 overflow-hidden"
+              class="relative w-[280px] md:w-[300px] xl:w-[320px] 2xl:w-[360px] bg-gray-900 rounded-[2.5rem] shadow-2xl border-4 border-gray-800 overflow-hidden"
             >
               <!-- Status bar -->
               <div class="bg-gray-900 flex justify-between items-center px-6 py-2">

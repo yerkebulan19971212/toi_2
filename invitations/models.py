@@ -156,8 +156,11 @@ class Invitation(models.Model):
         return {
             'event_title': self.event_title or self.get_display_title(),
             'event_date': self.date.strftime('%d %B %Y') if self.date else '',
+            'event_date_iso': self.date.isoformat() if self.date else '',
+            'event_date_dot': self.date.strftime('%d · %m · %Y') if self.date else '',
             'event_time': self.time.strftime('%H:%M') if self.time else '',
             'event_location': self.location,
+            'address': self.address,
             'map_link': self.map_url,
             'description': self.description,
             'images': images,

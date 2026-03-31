@@ -6,7 +6,7 @@
         <h2 class="section-title">Соңғы жаңалықтар</h2>
       </div>
 
-      <div v-if="loading" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div v-if="loading" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         <div
           v-for="i in 3"
           :key="i"
@@ -25,7 +25,7 @@
         {{ error }}
       </div>
 
-      <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div v-else class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         <article
           v-for="post in displayPosts"
           :key="post.id"

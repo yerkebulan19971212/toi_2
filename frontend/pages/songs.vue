@@ -1,5 +1,5 @@
 <template>
-  <div class="py-12 md:py-16 min-h-screen bg-cream-100">
+  <div class="py-12 md:py-16 min-h-screen bg-cream-100" :class="playerStore.currentSong ? 'pb-28 md:pb-0' : ''">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <!-- Header -->
       <div class="mb-8">

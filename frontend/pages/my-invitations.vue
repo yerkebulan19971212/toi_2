@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-cream-100 py-12">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between mb-8">
+      <div class="flex flex-wrap items-center justify-between gap-4 mb-8">
         <div>
           <p class="section-label mb-1">Жеке кабинет</p>
           <h1 class="section-title">Менің шақыруларым</h1>

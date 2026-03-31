@@ -17,11 +17,11 @@
       <p class="text-gray-400 text-lg mb-8 max-w-xl mx-auto">
         Мыңдаған отбасылар Shaqyru.kz арқылы — тойыңыздың ең бір мәнді сәттерін мәңгіге сақтаңыз
       </p>
-      <div class="flex flex-wrap justify-center gap-4">
-        <NuxtLink to="/builder" class="btn-primary text-base px-8 py-3.5">
+      <div class="flex flex-col sm:flex-row flex-wrap justify-center gap-4">
+        <NuxtLink to="/templates" class="btn-primary text-base px-8 py-3.5 w-full sm:w-auto">
           Шақыру жасау
         </NuxtLink>
-        <NuxtLink to="/templates" class="btn-secondary text-base px-8 py-3.5 border-gray-600 text-gray-300 hover:border-white hover:text-white hover:bg-transparent">
+        <NuxtLink to="/templates" class="btn-secondary text-base px-8 py-3.5 w-full sm:w-auto border-gray-600 text-gray-300 hover:border-white hover:text-white hover:bg-transparent">
           Үлгілерді қарау
         </NuxtLink>
       </div>

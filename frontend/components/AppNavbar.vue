@@ -20,7 +20,7 @@
         </NuxtLink>
 
         <!-- Desktop Nav -->
-        <div class="hidden md:flex items-center space-x-8">
+        <div class="hidden md:flex items-center space-x-5 lg:space-x-8">
           <NuxtLink to="/" class="nav-link" active-class="nav-link-active" exact>Басты бет</NuxtLink>
           <NuxtLink to="/templates" class="nav-link" active-class="nav-link-active">Үлгілер</NuxtLink>
           <NuxtLink to="/songs" class="nav-link" active-class="nav-link-active">Той әндері</NuxtLink>
@@ -28,10 +28,10 @@
         </div>
 
         <!-- Right side -->
-        <div class="hidden md:flex items-center space-x-4">
+        <div class="hidden md:flex items-center space-x-3 lg:space-x-4">
           <a
             href="tel:+77486409093"
-            class="text-sm font-sans text-gray-600 hover:text-brand-green font-medium transition-colors"
+            class="hidden lg:inline text-sm font-sans text-gray-600 hover:text-brand-green font-medium transition-colors"
           >
             +7 748 640 90 93
           </a>
@@ -48,7 +48,7 @@
               Кіру
             </NuxtLink>
           </template>
-          <NuxtLink to="/builder" class="btn-primary text-sm py-2 px-4">
+          <NuxtLink to="/templates" class="btn-primary text-sm py-2 px-4">
             Шақыру жасау
           </NuxtLink>
         </div>
@@ -113,7 +113,7 @@
           @click="menuOpen = false"
         >Блог</NuxtLink>
         <div class="pt-2 border-t border-gray-100 space-y-2">
-          <NuxtLink to="/builder" class="btn-primary w-full justify-center" @click="menuOpen = false">
+          <NuxtLink to="/templates" class="btn-primary w-full justify-center" @click="menuOpen = false">
             Шақыру жасау
           </NuxtLink>
           <template v-if="authStore.isLoggedIn">

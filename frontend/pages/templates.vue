@@ -48,7 +48,7 @@
       </div>
 
       <!-- Loading -->
-      <div v-if="loading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+      <div v-if="loading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-5">
         <div
           v-for="i in 8"
           :key="i"
@@ -66,7 +66,7 @@
       <!-- Grid -->
       <div
         v-else-if="displayTemplates.length"
-        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-5"
       >
         <TemplateCard
           v-for="tpl in displayTemplates"

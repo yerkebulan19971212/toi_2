@@ -1,6 +1,8 @@
 import io
 
 import qrcode
+from django.conf import settings
+from django.core.files.storage import default_storage
 from django.db.models import Count
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -15,9 +17,11 @@ from .models import (
     GuestComment,
     Invitation,
     InvitationCategory,
+    InvitationImage,
     InvitationTemplate,
     RSVPResponse,
 )
+from .renderer import render_invitation
 from .serializers import (
     GuestCommentSerializer,
     GuestSerializer,
@@ -51,6 +55,8 @@ class TemplateListView(generics.ListAPIView):
                 qs = qs.filter(category_id=int(category))
             else:
                 qs = qs.filter(category__code=category)
+        print(qs.query)
+        print('----')
         return qs
 
 
@@ -72,6 +78,23 @@ class InvitationCreateView(generics.CreateAPIView):
         serializer.is_valid(raise_exception=True)
         owner = request.user if request.user.is_authenticated else None
         invitation = serializer.save(owner=owner)
+
+        photos = request.FILES.getlist('photos')
+        for i, photo in enumerate(photos):
+            path = default_storage.save(f'invitations/photos/{photo.name}', photo)
+            url = request.build_absolute_uri(f'{settings.MEDIA_URL}{path}')
+            InvitationImage.objects.create(
+                invitation=invitation,
+                url=url,
+                placement=invitation.image_layout or 'gallery_top',
+                sort_order=i,
+            )
+
+        if photos and invitation.template and invitation.template.template_file:
+            ctx = invitation.get_render_context()
+            invitation.rendered_html = render_invitation(invitation.template.template_file, ctx)
+            invitation.save(update_fields=['rendered_html'])
+
         read_serializer = InvitationReadSerializer(
             invitation, context={'request': request}
         )

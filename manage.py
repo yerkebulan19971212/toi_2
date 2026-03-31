@@ -20,3 +20,19 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# dd = {
+#     "fields": [
+#         {"name": "bride_name", "type": "text", "label": "Бойжеткен есімі", "required": true,
+#          "placeholder": "Мысалы: Айгерім"},
+#         {"name": "groom_name", "type": "text", "label": "Жігіт есімі", "required": true,
+#          "placeholder": "Мысалы: Асан"},
+#         {"name": "date", "type": "date", "label": "Той күні", "required": true},
+#         {"name": "time", "type": "time", "label": "Уақыты", "required": true},
+#         {"name": "location", "type": "text", "label": "Мекеме / Зал атауы", "required": true,
+#          "placeholder": "Мысалы: Рахат сарайы"},
+#         {"name": "address", "type": "textarea", "label": "Мекен-жай", "placeholder": "Толық мекен-жай..."},
+#         {"name": "map_url", "type": "url", "label": "Карта сілтемесі (Google Maps)",
+#          "placeholder": "https://maps.google.com/..."}
+#     ]
+# }

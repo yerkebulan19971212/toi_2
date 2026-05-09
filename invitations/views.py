@@ -215,68 +215,6 @@ class RSVPResultsView(APIView):
 # Public invitation HTML page
 # ---------------------------------------------------------------------------
 
-_RSVP_SNIPPET = """
-<style>
-#rsvp-box{max-width:480px;margin:2rem auto;padding:1.5rem;font-family:sans-serif}
-#rsvp-box h3{text-align:center;margin-bottom:1rem;font-size:1.1rem}
-#rsvp-box input{width:100%;padding:.6rem .8rem;margin-bottom:.6rem;border:1px solid #ccc;border-radius:8px;font-size:.95rem;box-sizing:border-box}
-.rsvp-btns{display:flex;flex-direction:column;gap:.5rem}
-.rsvp-btn{padding:.8rem;border:none;border-radius:10px;font-size:.95rem;cursor:pointer;font-weight:600;transition:.15s}
-.rsvp-btn:disabled{opacity:.5}
-.btn-yes{background:#22c55e;color:#fff}
-.btn-pair{background:#3b82f6;color:#fff}
-.btn-no{background:#e5e7eb;color:#374151}
-#rsvp-msg{margin-top:.8rem;text-align:center;font-size:.9rem;padding:.5rem;border-radius:8px}
-.msg-ok{background:#dcfce7;color:#166534}
-.msg-err{background:#fee2e2;color:#991b1b}
-</style>
-<div id="rsvp-box">
-  <h3>Қатысуыңызды растаңыз</h3>
-  <input id="rsvp-name" placeholder="Аты-жөні" />
-  <input id="rsvp-phone" placeholder="Телефон (міндетті емес)" />
-  <div class="rsvp-btns">
-    <button class="rsvp-btn btn-yes" onclick="submitRsvp('solo')">Иә, жалғыз өзім барамын</button>
-    <button class="rsvp-btn btn-pair" onclick="submitRsvp('with_partner')">Жұбайыммен бірге барамын</button>
-    <button class="rsvp-btn btn-no" onclick="submitRsvp('declined')">Өкінішке орай, келе алмаймын</button>
-  </div>
-  <div id="rsvp-msg" style="display:none"></div>
-</div>
-<script>
-function submitRsvp(choice){
-  var name=document.getElementById('rsvp-name').value.trim();
-  if(!name){alert('Аты-жөні міндетті');return;}
-  var phone=document.getElementById('rsvp-phone').value.trim();
-  var slug=location.pathname.replace(/^\\/i\\/|\\/$/g,'');
-  document.querySelectorAll('.rsvp-btn').forEach(function(b){b.disabled=true});
-  fetch('/api/invitations/'+slug+'/rsvp/',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({guest_name:name,phone:phone,response:choice})
-  }).then(function(r){
-    var msg=document.getElementById('rsvp-msg');
-    msg.style.display='block';
-    if(r.ok||r.status===409){
-      msg.className='msg-ok';
-      msg.textContent=r.status===409?'Сіз бұрын жауап бергенсіз.':'Жауабыңыз қабылданды! Рахмет!';
-      document.getElementById('rsvp-box').querySelector('h3').style.display='none';
-      document.getElementById('rsvp-name').style.display='none';
-      document.getElementById('rsvp-phone').style.display='none';
-      document.querySelector('.rsvp-btns').style.display='none';
-    }else{
-      msg.className='msg-err';
-      msg.textContent='Қате кетті. Кейінірек қайталаңыз.';
-      document.querySelectorAll('.rsvp-btn').forEach(function(b){b.disabled=false});
-    }
-  }).catch(function(){
-    var msg=document.getElementById('rsvp-msg');
-    msg.style.display='block';msg.className='msg-err';
-    msg.textContent='Желі қатесі. Кейінірек қайталаңыз.';
-    document.querySelectorAll('.rsvp-btn').forEach(function(b){b.disabled=false});
-  });
-}
-</script>
-"""
-
 
 class InvitationQRView(APIView):
     """Return a QR code PNG for the public invitation URL."""
@@ -384,11 +322,5 @@ class InvitationHTMLView(APIView):
             html = html.replace('</head>', f'{og_tags}\n</head>', 1)
         else:
             html = f'<head>{og_tags}</head>' + html
-
-        # Inject RSVP form before </body>
-        if '</body>' in html:
-            html = html.replace('</body>', _RSVP_SNIPPET + '</body>', 1)
-        else:
-            html += _RSVP_SNIPPET
 
         return HttpResponse(html, content_type='text/html; charset=utf-8')

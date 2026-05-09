@@ -76,7 +76,6 @@
 definePageMeta({ layout: 'blank' })
 
 const route = useRoute()
-const config = useRuntimeConfig()
 const { get, post } = useApi()
 
 const { data: invitation, pending } = await useAsyncData(
@@ -89,71 +88,12 @@ const rsvpSent = ref(false)
 const frameRef = ref(null)
 const frameHeight = ref('100vh')
 
-// Inject RSVP form + auto-resize script into rendered_html
+// Inject auto-resize script into rendered_html
 const renderedDoc = computed(() => {
   const html = invitation.value?.rendered_html
   if (!html) return ''
-  const slug = route.params.slug
-  const apiBase = config.public.apiBase || ''
 
-  const rsvpScript = `
-<style>
-#rsvp-box{max-width:480px;margin:2rem auto;padding:1.5rem;font-family:sans-serif}
-#rsvp-box h3{text-align:center;margin-bottom:1rem;font-size:1.1rem}
-#rsvp-box input{width:100%;padding:.6rem .8rem;margin-bottom:.6rem;border:1px solid #ccc;border-radius:8px;font-size:.95rem;box-sizing:border-box}
-.rsvp-btns{display:flex;flex-direction:column;gap:.5rem}
-.rsvp-btn{padding:.8rem;border:none;border-radius:10px;font-size:.95rem;cursor:pointer;font-weight:600}
-.btn-yes{background:#22c55e;color:#fff}
-.btn-pair{background:#3b82f6;color:#fff}
-.btn-no{background:#e5e7eb;color:#374151}
-#rsvp-msg{margin-top:.8rem;text-align:center;font-size:.9rem;padding:.5rem;border-radius:8px;display:none}
-.msg-ok{background:#dcfce7;color:#166534}
-.msg-err{background:#fee2e2;color:#991b1b}
-</style>
-<div id="rsvp-box">
-  <h3>Қатысуыңызды растаңыз</h3>
-  <input id="rsvp-name" placeholder="Аты-жөні" />
-  <input id="rsvp-phone" placeholder="Телефон (міндетті емес)" />
-  <div class="rsvp-btns">
-    <button class="rsvp-btn btn-yes" onclick="submitRsvp('solo')">Иә, жалғыз өзім барамын</button>
-    <button class="rsvp-btn btn-pair" onclick="submitRsvp('with_partner')">Жұбайыммен бірге</button>
-    <button class="rsvp-btn btn-no" onclick="submitRsvp('declined')">Келе алмаймын</button>
-  </div>
-  <div id="rsvp-msg"></div>
-</div>
-<script>
-function submitRsvp(choice){
-  var name=document.getElementById('rsvp-name').value.trim();
-  if(!name){alert('Аты-жөні міндетті');return;}
-  var phone=document.getElementById('rsvp-phone').value.trim();
-  document.querySelectorAll('.rsvp-btn').forEach(function(b){b.disabled=true;});
-  fetch('${apiBase}/api/invitations/${slug}/rsvp/',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({guest_name:name,phone:phone,response:choice})
-  }).then(function(r){
-    var msg=document.getElementById('rsvp-msg');
-    msg.style.display='block';
-    if(r.ok||r.status===409){
-      msg.className='msg-ok';
-      msg.textContent=r.status===409?'Сіз бұрын жауап бергенсіз.':'Жауабыңыз қабылданды! Рахмет!';
-      document.getElementById('rsvp-box').querySelector('h3').style.display='none';
-      document.getElementById('rsvp-name').style.display='none';
-      document.getElementById('rsvp-phone').style.display='none';
-      document.querySelector('.rsvp-btns').style.display='none';
-    }else{
-      msg.className='msg-err';
-      msg.textContent='Қате кетті.';
-      document.querySelectorAll('.rsvp-btn').forEach(function(b){b.disabled=false;});
-    }
-  }).catch(function(){
-    var msg=document.getElementById('rsvp-msg');
-    msg.style.display='block';msg.className='msg-err';
-    msg.textContent='Желі қатесі.';
-    document.querySelectorAll('.rsvp-btn').forEach(function(b){b.disabled=false;});
-  });
-}
-// Auto-resize iframe
+  const resizeScript = `<script>
 window.addEventListener('load',function(){
   parent.postMessage({iframeHeight:document.body.scrollHeight},'*');
 });
@@ -163,9 +103,9 @@ new ResizeObserver(function(){
 <\/script>`
 
   if (html.includes('</body>')) {
-    return html.replace('</body>', rsvpScript + '</body>')
+    return html.replace('</body>', resizeScript + '</body>')
   }
-  return html + rsvpScript
+  return html + resizeScript
 })
 
 function onFrameLoad() {

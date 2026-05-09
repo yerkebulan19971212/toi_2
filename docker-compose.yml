@@ -6,8 +6,8 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${DB_NAME:-shaqyru}
-      POSTGRES_USER: ${DB_USER:-postgres}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_USER: ${DB_USER:-shaqyru_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-1Jc)YBa51B!J}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:

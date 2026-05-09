@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 try:
@@ -32,6 +33,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'storages',
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
@@ -160,7 +162,26 @@ REST_FRAMEWORK = {
 }
 
 from datetime import timedelta
+
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
+}
+
+STORAGES = {
+    'default': {
+        'BACKEND': 'storages.backends.s3.S3Storage',
+        'OPTIONS': {
+            'access_key': config('AWS_ACCESS_KEY_ID'),
+            'secret_key': config('AWS_SECRET_ACCESS_KEY'),
+            'bucket_name': config('AWS_STORAGE_BUCKET_NAME'),
+            'endpoint_url': config('AWS_S3_ENDPOINT_URL'),
+            'location': config('AWS_LOCATION', default=''),
+            'querystring_auth': False,
+            'signature_version': 's3'
+        },
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"
+    }
 }

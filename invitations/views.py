@@ -82,7 +82,7 @@ class InvitationCreateView(generics.CreateAPIView):
         photos = request.FILES.getlist('photos')
         for i, photo in enumerate(photos):
             path = default_storage.save(f'invitations/photos/{photo.name}', photo)
-            url = request.build_absolute_uri(f'{settings.MEDIA_URL}{path}')
+            url = default_storage.url(path)
             InvitationImage.objects.create(
                 invitation=invitation,
                 url=url,

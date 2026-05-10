@@ -1,28 +1,14 @@
-# ---- Dev ----
-FROM node:20-alpine AS dev
-
-WORKDIR /app
-
-COPY package*.json ./
-RUN npm install
-
-COPY . .
-
-EXPOSE 3030
-
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "3030"]
-
 # ---- Production build ----
 FROM node:20-alpine AS builder
 
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 
 COPY . .
 
-ARG NUXT_PUBLIC_API_BASE=https://api-toi.daraedu.kz
+ARG NUXT_PUBLIC_API_BASE=http://localhost:8000
 ENV NUXT_PUBLIC_API_BASE=$NUXT_PUBLIC_API_BASE
 
 RUN npm run build
@@ -35,11 +21,10 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV HOST=0.0.0.0
 ENV NITRO_HOST=0.0.0.0
-ENV PORT=3030
-ENV NUXT_PUBLIC_API_BASE=https://api-toi.daraedu.kz
+ENV PORT=3000
 
 COPY --from=builder /app/.output ./.output
 
-EXPOSE 3030
+EXPOSE 3000
 
 CMD ["node", ".output/server/index.mjs"]

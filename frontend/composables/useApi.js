@@ -2,7 +2,7 @@ import axios from 'axios'
 
 export const useApi = () => {
   const config = useRuntimeConfig()
-  const baseURL = config.public.apiBase
+  const baseURL = (import.meta.server && config.apiBase) ? config.apiBase : config.public.apiBase
 
   const client = axios.create({
     baseURL,
